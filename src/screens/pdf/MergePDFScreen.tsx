@@ -90,7 +90,7 @@ export default function MergePDFScreen({ navigation }: Props) {
       )}
 
       <InfoBox
-        icon="ℹ️"
+        icon="info"
         text="Merge PDFs combines multiple files in the order you add them. Drag to reorder is coming soon."
       />
     </ToolShell>

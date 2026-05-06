@@ -1,8 +1,9 @@
 import React from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { spacing } from '../../theme/spacing';
 import { useAppTheme } from '../../theme/ThemeProvider';
 import { GhostButton } from './AppHeader';
+import { Icon } from './Icon';
 
 export function EmptyState({
   title,
@@ -19,7 +20,7 @@ export function EmptyState({
   return (
     <View style={styles.wrapper}>
       <View style={[styles.illustration, { borderColor: colors.primary, backgroundColor: colors.primaryLight }]}>
-        <Text style={{ fontSize: 36 }}>📄</Text>
+        <Icon name="file-text" size={40} color={colors.primary} />
       </View>
       <Text style={[typography.h3, { textAlign: 'center', marginTop: spacing.lg }]}>
         {title}

@@ -72,7 +72,7 @@ export default function UnlockPDFScreen({ navigation }: Props) {
         style={{ borderWidth: 1.5, borderColor: colors.border, borderRadius: radius.md, padding: spacing.md, fontSize: 16, color: colors.textPrimary, backgroundColor: colors.surface }}
       />
 
-      <InfoBox icon="🔓" text="Enter the password that was used to lock this PDF to remove the protection." />
+      <InfoBox icon="unlock" text="Enter the password that was used to lock this PDF to remove the protection." />
     </ToolShell>
   );
 }

@@ -1,7 +1,7 @@
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createSlice } from '@reduxjs/toolkit';
 
-export type ThemeMode = 'light' | 'dark' | 'system';
+export type ThemeMode = 'light';
 
 type SettingsState = {
   appearance: ThemeMode;
@@ -12,7 +12,7 @@ type SettingsState = {
 };
 
 const initialState: SettingsState = {
-  appearance: 'system',
+  appearance: 'light',
   defaultExportFormat: 'pdf',
   defaultSaveLocation: 'internal',
   conversionQualityPreset: 'medium',

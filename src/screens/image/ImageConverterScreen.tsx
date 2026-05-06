@@ -1,48 +1,60 @@
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useState } from 'react';
 import { Alert, View } from 'react-native';
-import { ToolShell, PickerCard, BigButton, InfoBox, OptionRow, ImagePreviewCard, SectionLabel } from '../../components/common/ToolShell';
+import {
+  ToolShell,
+  PickerCard,
+  BigButton,
+  InfoBox,
+  OptionRow,
+  ImagePreviewCard,
+  SectionLabel,
+} from '../../components/common/ToolShell';
 import { ProgressOverlay } from '../../components/common/ProgressOverlay';
 import { ROUTES } from '../../navigation/routes';
 import type { HomeStackParamList } from '../../types/navigation';
 import { spacing } from '../../theme/spacing';
 import { useFilePicker, type PickedFile } from '../../hooks/useFilePicker';
-import { shareLocalFile } from '../../utils/shareOpen';
+import { convertImage, type ConvertFormat } from '../../services/converter/ImageProcessor';
+import { showToast } from '../../utils/toast';
 
 type Props = NativeStackScreenProps<HomeStackParamList, typeof ROUTES.IMAGE_CONVERTER>;
 
-const FORMATS = [
-  { key: 'JPG', label: 'JPG', description: 'Best for photos · smaller file size' },
-  { key: 'PNG', label: 'PNG', description: 'Best for graphics · lossless quality' },
-  { key: 'WebP', label: 'WebP', description: 'Modern format · smallest size' },
-] as const;
+const FORMATS: { key: ConvertFormat; label: string; description: string }[] = [
+  { key: 'JPG', label: 'JPG', description: 'Best for photos · smaller file' },
+  { key: 'PNG', label: 'PNG', description: 'Lossless quality · supports transparency' },
+  { key: 'WebP', label: 'WebP', description: 'Modern format · best compression' },
+];
 
 export default function ImageConverterScreen({ navigation }: Props) {
   const [busy, setBusy] = useState(false);
   const [picked, setPicked] = useState<PickedFile | null>(null);
-  const [format, setFormat] = useState<'JPG' | 'PNG' | 'WebP'>('JPG');
+  const [format, setFormat] = useState<ConvertFormat>('JPG');
+  const [done, setDone] = useState(false);
   const { pickImageFromFiles } = useFilePicker();
 
   async function pickFile() {
     setBusy(true);
     try {
       const file = await pickImageFromFiles();
-      if (file) setPicked(file);
+      if (file) { setPicked(file); setDone(false); }
     } finally {
       setBusy(false);
     }
   }
 
-  function convert() {
+  async function convert() {
     if (!picked) return;
-    Alert.alert(
-      'Not available offline',
-      'Image format conversion requires a native codec not included in this build. You can share the original image.',
-      [
-        { text: 'Share original', onPress: () => shareLocalFile({ path: picked.uri, mime: picked.mime ?? 'image/jpeg', title: picked.name }).catch(() => {}) },
-        { text: 'Cancel', style: 'cancel' },
-      ],
-    );
+    setBusy(true);
+    try {
+      await convertImage(picked.uri, format);
+      setDone(true);
+      showToast.success(`Converted to ${format}!`, 'File saved to your Downloads folder.');
+    } catch (e) {
+      Alert.alert('Conversion failed', e instanceof Error ? e.message : 'Could not convert image.');
+    } finally {
+      setBusy(false);
+    }
   }
 
   return (
@@ -51,26 +63,36 @@ export default function ImageConverterScreen({ navigation }: Props) {
       subtitle="Change image format"
       navigation={navigation}
       bottomBar={
-        <BigButton label={`Convert to ${format}`} onPress={convert} disabled={!picked} loading={busy} />
+        <BigButton
+          label={busy ? 'Converting…' : `Convert to ${format}`}
+          onPress={() => convert().catch(() => {})}
+          disabled={!picked || busy}
+          loading={busy}
+        />
       }
     >
-      <ProgressOverlay visible={busy} message="Loading…" />
+      <ProgressOverlay visible={busy} message={`Converting to ${format}…`} />
 
       {picked ? (
         <>
-          <ImagePreviewCard uri={picked.uri} onRemove={() => setPicked(null)} />
-          <PickerCard label={picked.name} fileName={picked.name} fileSize={picked.size != null ? `${(picked.size / 1024).toFixed(0)} KB` : undefined} onPress={() => pickFile().catch(() => {})} />
+          <ImagePreviewCard uri={picked.uri} onRemove={() => { setPicked(null); setDone(false); }} />
+          <PickerCard
+            label={picked.name}
+            fileName={picked.name}
+            fileSize={picked.size != null ? `${(picked.size / 1024).toFixed(0)} KB` : undefined}
+            onPress={() => pickFile().catch(() => {})}
+          />
         </>
       ) : (
         <PickerCard
           label="Select an image"
-          hint="JPG, PNG or WebP"
+          hint="JPG, PNG or WebP from your gallery or files"
           onPress={() => pickFile().catch(() => {})}
           busy={busy}
         />
       )}
 
-      <SectionLabel text="Convert to format" />
+      <SectionLabel text="Convert to" />
       <View style={{ gap: spacing.sm }}>
         {FORMATS.map(f => (
           <OptionRow
@@ -78,12 +100,16 @@ export default function ImageConverterScreen({ navigation }: Props) {
             label={f.label}
             description={f.description}
             selected={format === f.key}
-            onPress={() => setFormat(f.key)}
+            onPress={() => { setFormat(f.key); setDone(false); }}
           />
         ))}
       </View>
 
-      <InfoBox icon="🖼️" text="Converting changes the file format. The image content stays the same." />
+      {done ? (
+        <InfoBox icon="check-circle" text={`Converted to ${format} and saved to your Downloads folder.`} />
+      ) : (
+        <InfoBox icon="image" text="Select the target format above. The original file is kept unchanged." />
+      )}
     </ToolShell>
   );
 }

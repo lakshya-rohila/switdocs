@@ -28,18 +28,21 @@
 	<true/>
 	<key>NSAppTransportSecurity</key>
 	<dict>
-	  <!-- Do not change NSAllowsArbitraryLoads to true, or you will risk app rejection! -->
 		<key>NSAllowsArbitraryLoads</key>
 		<false/>
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
-	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>SwiftDocs saves your signature image to your photo library.</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>SwiftDocs needs access to your photo library to save and load images.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string></string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>SwiftDocs saves processed images and signatures to your photo library.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>SwiftDocs needs access to your photo library to select, crop, compress and convert images.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>SwiftDocs uses your camera to scan documents and QR codes.</string>
+	<key>RCTNewArchEnabled</key>
+	<true/>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>

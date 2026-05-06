@@ -1,10 +1,12 @@
 import ReactNativeBlobUtil from 'react-native-blob-util';
 import { PermissionsAndroid, Platform } from 'react-native';
 import { showToast } from './toast';
+import { store } from '../store';
+import { recentFilesActions } from '../store/slices/recentFilesSlice';
 
 export const requestStoragePermission = async (): Promise<boolean> => {
   if (Platform.OS !== 'android') return true;
-  if (Platform.Version >= 33) return true; // Android 13+ no storage permission needed for Downloads
+  if ((Platform.Version as number) >= 33) return true;
 
   try {
     const granted = await PermissionsAndroid.request(
@@ -14,7 +16,7 @@ export const requestStoragePermission = async (): Promise<boolean> => {
         message: 'SwiftDocs needs storage access to save files to your Downloads folder.',
         buttonPositive: 'Allow',
         buttonNegative: 'Deny',
-      }
+      },
     );
     return granted === PermissionsAndroid.RESULTS.GRANTED;
   } catch {
@@ -22,10 +24,27 @@ export const requestStoragePermission = async (): Promise<boolean> => {
   }
 };
 
-// Save any file (from temp/cache) into the device Downloads folder
+/** Record a saved file in the Recent Files Redux store */
+function recordRecent(destPath: string, fileName: string) {
+  try {
+    store.dispatch(
+      recentFilesActions.addRecent({
+        id: `${Date.now()}-${fileName}`,
+        uri: destPath,
+        name: fileName,
+        mimeType: getMimeType(fileName),
+        modifiedAt: Date.now(),
+      }),
+    );
+  } catch {
+    // non-fatal — recent files tracking is best-effort
+  }
+}
+
+/** Copy an existing temp/cache file into the device Downloads folder */
 export const saveToDownloads = async (
   sourcePath: string,
-  fileName: string
+  fileName: string,
 ): Promise<string | null> => {
   try {
     const hasPermission = await requestStoragePermission();
@@ -37,33 +56,32 @@ export const saveToDownloads = async (
     const downloadsPath = ReactNativeBlobUtil.fs.dirs.DownloadDir;
     const destPath = `${downloadsPath}/${fileName}`;
 
-    // If file already at a path, copy it
     await ReactNativeBlobUtil.fs.cp(sourcePath, destPath);
 
-    // Scan file into MediaStore so it appears in Files/Downloads app instantly
     if (Platform.OS === 'android') {
       await ReactNativeBlobUtil.android.addCompleteDownload({
         title: fileName,
-        description: 'Downloaded via SwiftDocs',
+        description: 'Saved via SwiftDocs',
         mime: getMimeType(fileName),
         path: destPath,
         showNotification: true,
       });
     }
 
-    showToast.success('Saved to Downloads!', `${fileName} is ready in your Downloads folder`);
+    showToast.success('Saved!', `${fileName} saved to Downloads`);
+    recordRecent(destPath, fileName);
     return destPath;
-  } catch (error) {
+  } catch {
     showToast.error('Save Failed', 'Could not save file to Downloads');
     return null;
   }
 };
 
-// Write raw data (base64 or text) directly to Downloads
+/** Write raw base64 or utf8 data directly into the device Downloads folder */
 export const writeToDownloads = async (
   data: string,
   fileName: string,
-  encoding: 'base64' | 'utf8' = 'base64'
+  encoding: 'base64' | 'utf8' = 'base64',
 ): Promise<string | null> => {
   try {
     const hasPermission = await requestStoragePermission();
@@ -87,9 +105,10 @@ export const writeToDownloads = async (
       });
     }
 
-    showToast.success('Saved to Downloads!', `${fileName} saved in your Downloads folder`);
+    showToast.success('Saved!', `${fileName} saved to Downloads`);
+    recordRecent(destPath, fileName);
     return destPath;
-  } catch (error) {
+  } catch {
     showToast.error('Save Failed', 'Could not write file to Downloads');
     return null;
   }

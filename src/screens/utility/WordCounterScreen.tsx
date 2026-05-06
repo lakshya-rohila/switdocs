@@ -1,6 +1,7 @@
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useMemo, useState } from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Icon } from '../../components/common/Icon';
 
 import { AppHeader } from '../../components/common/AppHeader';
 import { ROUTES } from '../../navigation/routes';
@@ -76,7 +77,7 @@ export default function WordCounterScreen({ navigation }: Props) {
           onPress={() => importFromFiles().catch(() => {})}
           style={[styles.importBtn, { borderColor: colors.border, backgroundColor: colors.surface }]}
         >
-          <Text style={{ fontSize: 20 }}>📂</Text>
+          <Icon name="folder" size={20} color={colors.primary} />
           <Text style={[typography.label, { color: colors.primary }]}>Import from Files</Text>
         </Pressable>
 
@@ -88,7 +89,7 @@ export default function WordCounterScreen({ navigation }: Props) {
           </View>
         ) : (
           <View style={[styles.emptyHint, { backgroundColor: colors.primaryLight, borderColor: colors.border }]}>
-            <Text style={{ fontSize: 32 }}>📝</Text>
+            <Icon name="edit-3" size={36} color={colors.primary} />
             <Text style={[typography.bodyLarge, { color: colors.textSecondary, textAlign: 'center' }]}>
               Start typing above to see{'\n'}your word count and stats
             </Text>

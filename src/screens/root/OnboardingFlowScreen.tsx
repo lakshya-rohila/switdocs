@@ -29,18 +29,19 @@ const STEPS: {
 }[] = [
   {
     id: '1',
-    image: require('../../../assets/images/Onboarding1.png'),
+    image: require('../../../assets/images/Onboarding1.jpg'),
     title: 'All your doc tools in one place',
     subtitle: 'Sign, convert, compress, merge — everything you need.',
   },
   {
     id: '2',
-    image: require('../../../assets/images/Onboarding2.png'),
+    image: require('../../../assets/images/Onboarding2.jpg'),
     title: 'Zero ads. Always free.',
     subtitle: 'No popups, banners, or interruptions. Ever.',
   },
   {
     id: '3',
+    image: require('../../../assets/images/onboarding3.jpg'),
     title: 'Your files stay yours',
     subtitle:
       'SwiftDocs is frontend-only: no account, no uploads to our servers — your files stay on your device.',

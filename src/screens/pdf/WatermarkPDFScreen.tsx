@@ -95,7 +95,7 @@ export default function WatermarkPDFScreen({ navigation }: Props) {
         <Switch value={diagonal} onValueChange={setDiagonal} />
       </View>
 
-      <InfoBox icon="💧" text="The watermark text appears semi-transparent on every page of the PDF." />
+      <InfoBox icon="droplet" text="The watermark text appears semi-transparent on every page of the PDF." />
     </ToolShell>
   );
 }

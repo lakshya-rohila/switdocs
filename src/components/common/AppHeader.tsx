@@ -22,8 +22,6 @@ type AppHeaderProps = {
   title?: string;
   navigation?: NavigationProp<Record<string, object | undefined>>;
   right?: React.ReactNode;
-  onPressSearch?: () => void;
-  onPressProfile?: () => void;
 };
 
 export function AppHeader({
@@ -31,8 +29,6 @@ export function AppHeader({
   title,
   navigation,
   right,
-  onPressSearch,
-  onPressProfile,
 }: AppHeaderProps) {
   const insets = useSafeAreaInsets();
   const { colors, typography } = useAppTheme();
@@ -51,29 +47,19 @@ export function AppHeader({
       ]}>
       <View style={styles.rowBetween}>
         {isMain ? (
-          <>
+          <View style={styles.mainBrand}>
+            <View style={[styles.logoMark, { backgroundColor: colors.primary }]}>
+              <Text style={styles.logoLetter}>S</Text>
+            </View>
             <View>
-              <Text style={[styles.brandWord, typography.h3, { color: colors.textPrimary }]}>
+              <Text style={[styles.brandWord, { color: colors.textPrimary }]}>
                 Swift<Text style={{ color: colors.primary }}>Docs</Text>
               </Text>
               <Text style={[typography.caption, { color: colors.textSecondary }]}>
-                Every doc tool. Zero ads. Always free.
+                Every doc tool. Always free.
               </Text>
             </View>
-            <View style={styles.actions}>
-              <IconCircle
-                label="⌕"
-                onPress={() => onPressSearch?.()}
-                accessibilityLabel="Search tools"
-              />
-              <IconCircle
-                accent
-                label="S"
-                onPress={() => onPressProfile?.()}
-                accessibilityLabel="Guest profile"
-              />
-            </View>
-          </>
+          </View>
         ) : (
           <>
             <View style={styles.leftTitleRow}>
@@ -98,27 +84,6 @@ export function AppHeader({
         <TextInput style={styles.hiddenSearch} editable={false} />
       )}
     </View>
-  );
-}
-
-export function InlineSearchBar({
-  onPress,
-  placeholder = 'Search tools…',
-}: {
-  onPress: () => void;
-  placeholder?: string;
-}) {
-  const { colors, typography } = useAppTheme();
-  return (
-    <Pressable
-      accessibilityRole="button"
-      onPress={onPress}
-      style={[styles.searchOuter, { backgroundColor: colors.primaryLight }]}
-    >
-      <Text style={[typography.bodyLarge, { color: colors.textSecondary }]}>
-        {placeholder}
-      </Text>
-    </Pressable>
   );
 }
 
@@ -178,38 +143,6 @@ export function GhostButton({
       onPress={onPress}
       style={{ opacity: disabled ? 0.45 : 1 }}>
       <Text style={[typography.button, { color: colors.primary, textAlign: 'center' }]}>
-        {label}
-      </Text>
-    </Pressable>
-  );
-}
-
-function IconCircle({
-  label,
-  onPress,
-  accent,
-  accessibilityLabel,
-}: {
-  label: string;
-  onPress: () => void;
-  accent?: boolean;
-  accessibilityLabel?: string;
-}) {
-  const { colors } = useAppTheme();
-  return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityLabel={accessibilityLabel}
-      onPress={onPress}
-      style={[
-        styles.circle,
-        {
-          borderColor: colors.border,
-          backgroundColor: accent ? colors.primaryLight : colors.surface,
-        },
-      ]}
-    >
-      <Text style={{ fontSize: accent ? 14 : 18, fontWeight: accent ? '700' : '400', color: accent ? colors.primary : colors.textPrimary }}>
         {label}
       </Text>
     </Pressable>
@@ -326,9 +259,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.screenHorizontal,
     paddingBottom: spacing.md,
   },
-  rowBetween: { flexDirection: 'row', justifyContent: 'space-between', gap: spacing.md },
-  brandWord: { letterSpacing: 0.2 },
-  actions: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+  rowBetween: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: spacing.md },
+  mainBrand: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+  logoMark: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  logoLetter: { color: '#FFFFFF', fontSize: 20, fontWeight: '800', letterSpacing: -0.5 },
+  brandWord: { fontSize: 20, fontWeight: '800', letterSpacing: -0.3 },
   leftTitleRow: {
     flex: 1,
     flexDirection: 'row',
@@ -336,21 +277,6 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
   },
   back: { fontSize: 32, marginRight: spacing.xxs },
-  circle: {
-    height: 40,
-    width: 40,
-    borderRadius: 20,
-    borderWidth: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  searchOuter: {
-    marginHorizontal: spacing.screenHorizontal,
-    marginVertical: spacing.md,
-    borderRadius: radius.lg,
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.lg,
-  },
   hiddenSearch: { opacity: 0, height: 0 },
   primaryBtn: {
     borderRadius: radius.xl,

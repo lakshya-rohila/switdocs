@@ -21,6 +21,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAppTheme } from '../../theme/ThemeProvider';
 import { spacing } from '../../theme/spacing';
 import { radius } from '../../theme/radius';
+import { Icon } from './Icon';
 
 // ─── ToolShell ────────────────────────────────────────────────────────────────
 
@@ -46,7 +47,7 @@ export function ToolShell({ title, subtitle, navigation, bottomBar, children }: 
           onPress={() => navigation.canGoBack() && navigation.goBack()}
           style={styles.backBtn}
         >
-          <Text style={[styles.backChevron, { color: colors.primary }]}>‹</Text>
+          <Icon name="chevron-left" size={26} color={colors.primary} />
         </Pressable>
         <View style={styles.headerText}>
           <Text style={[typography.h3, { color: colors.textPrimary }]} numberOfLines={1}>{title}</Text>
@@ -96,12 +97,12 @@ export function PickerCard({ label, hint, onPress, fileName, fileSize, busy }: P
         onPress={onPress}
         style={[styles.pickerFilled, { backgroundColor: colors.primaryLight, borderColor: colors.primary }]}
       >
-        <Text style={styles.pickerIcon}>📄</Text>
+        <Icon name="file-text" size={26} color={colors.primary} />
         <View style={{ flex: 1 }}>
           <Text style={[typography.label, { color: colors.textPrimary }]} numberOfLines={1}>{fileName}</Text>
           {fileSize ? <Text style={[typography.caption, { color: colors.textSecondary }]}>{fileSize} · tap to change</Text> : <Text style={[typography.caption, { color: colors.textSecondary }]}>Tap to change</Text>}
         </View>
-        <Text style={{ fontSize: 18 }}>✓</Text>
+        <Icon name="check-circle" size={20} color={colors.primary} />
       </Pressable>
     );
   }
@@ -116,7 +117,7 @@ export function PickerCard({ label, hint, onPress, fileName, fileSize, busy }: P
         <ActivityIndicator color={colors.primary} />
       ) : (
         <>
-          <Text style={styles.pickerArrow}>↑</Text>
+          <Icon name="upload" size={32} color={colors.primary} />
           <Text style={[typography.bodyLarge, { color: colors.textPrimary, textAlign: 'center', fontWeight: '600' }]}>{label}</Text>
           {hint ? <Text style={[typography.caption, { color: colors.textSecondary, textAlign: 'center' }]}>{hint}</Text> : null}
         </>
@@ -132,7 +133,7 @@ export function InfoBox({ icon, text }: { icon?: string; text: string }) {
   const { colors, typography } = useAppTheme();
   return (
     <View style={[styles.infoBox, { backgroundColor: colors.primaryLight, borderColor: colors.border }]}>
-      {icon ? <Text style={{ fontSize: 20, marginRight: spacing.sm }}>{icon}</Text> : null}
+      {icon ? <Icon name={icon} size={18} color={colors.primary} /> : null}
       <Text style={[typography.body, { color: colors.textSecondary, flex: 1 }]}>{text}</Text>
     </View>
   );
@@ -246,7 +247,7 @@ export function ImagePreviewCard({ uri, onRemove }: { uri: string; onRemove?: ()
       <Image source={{ uri: src }} style={styles.imgPreviewImg} resizeMode="cover" />
       {onRemove ? (
         <Pressable accessibilityRole="button" onPress={onRemove} style={[styles.imgRemove, { backgroundColor: colors.surface }]}>
-          <Text style={{ fontSize: 13, fontWeight: '700', color: colors.textPrimary }}>✕</Text>
+          <Icon name="x" size={14} color={colors.textPrimary} />
         </Pressable>
       ) : null}
     </View>
@@ -267,7 +268,6 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   backBtn: { padding: spacing.xxs },
-  backChevron: { fontSize: 30, lineHeight: 34 },
   headerText: { flex: 1 },
 
   body: {
@@ -292,7 +292,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.xs,
   },
-  pickerArrow: { fontSize: 32, marginBottom: spacing.xs },
   pickerFilled: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -301,7 +300,6 @@ const styles = StyleSheet.create({
     borderRadius: radius.lg,
     padding: spacing.md,
   },
-  pickerIcon: { fontSize: 28 },
 
   infoBox: {
     flexDirection: 'row',

@@ -1,13 +1,14 @@
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React from 'react';
 import { Alert, Linking, Pressable, ScrollView, StyleSheet, Text, Switch, View } from 'react-native';
+import { Icon } from '../../components/common/Icon';
 
 import { AppHeader } from '../../components/common/AppHeader';
 import { Segmented } from '../../components/common/AppHeader';
 import { ROUTES } from '../../navigation/routes';
 import type { SettingsStackParamList } from '../../types/navigation';
 import { useAppDispatch, useAppSelector } from '../../hooks/typedHooks';
-import { settingsActions, type ThemeMode } from '../../store/slices/settingsSlice';
+import { settingsActions } from '../../store/slices/settingsSlice';
 import { recentFilesActions } from '../../store/slices/recentFilesSlice';
 import { useAppTheme } from '../../theme/ThemeProvider';
 import { spacing } from '../../theme/spacing';
@@ -17,12 +18,6 @@ import RNFS from 'react-native-fs';
 import { showToast } from '../../utils/toast';
 
 type Props = NativeStackScreenProps<SettingsStackParamList, typeof ROUTES.SETTINGS>;
-
-const LOOKS: { mode: ThemeMode; label: string }[] = [
-  { mode: 'light', label: 'Light' },
-  { mode: 'dark', label: 'Dark' },
-  { mode: 'system', label: 'System' },
-];
 
 const QUALITY_PRESETS: { key: 'low' | 'medium' | 'high'; label: string }[] = [
   { key: 'low', label: 'Low' },
@@ -85,20 +80,6 @@ export default function SettingsScreen({ navigation }: Props) {
       <AppHeader variant="inner" title="Settings" navigation={navigation} />
       <ScrollView contentContainerStyle={styles.sheet}>
 
-        <Section title="Appearance">
-          <View style={{ gap: spacing.xs }}>
-            <Text style={[typography.label, { color: colors.textSecondary }]}>Theme</Text>
-            <Segmented
-              items={LOOKS.map(l => l.label)}
-              value={LOOKS.find(l => l.mode === settings.appearance)?.label ?? 'System'}
-              onChange={choice => {
-                const hit = LOOKS.find(l => l.label === choice);
-                if (hit) dispatch(settingsActions.setAppearance(hit.mode));
-              }}
-            />
-          </View>
-        </Section>
-
         <Section title="Conversion">
           <View style={{ gap: spacing.xs }}>
             <Text style={[typography.label, { color: colors.textSecondary }]}>Quality preset</Text>
@@ -120,14 +101,14 @@ export default function SettingsScreen({ navigation }: Props) {
         </Section>
 
         <Section title="Storage">
-          <RowAction label="🗂  Clear recent files" onPress={clearRecentFiles} danger />
-          <RowAction label="🗑  Clear cache" onPress={() => clearCache().catch(() => {})} danger />
+          <RowAction label="Clear recent files" icon="clock" onPress={clearRecentFiles} danger />
+          <RowAction label="Clear cache" icon="trash-2" onPress={() => clearCache().catch(() => {})} danger />
         </Section>
 
         <Section title="About">
-          <RowAction label="🔒  Privacy Policy" onPress={openPrivacyPolicy} />
-          <RowAction label="⭐  Rate SwiftDocs" onPress={rateApp} />
-          <RowAction label="📣  Share SwiftDocs" onPress={shareApp} />
+          <RowAction label="Privacy Policy" icon="shield" onPress={openPrivacyPolicy} />
+          <RowAction label="Rate SwiftDocs" icon="star" onPress={rateApp} />
+          <RowAction label="Share SwiftDocs" icon="share-2" onPress={shareApp} />
           <View style={[styles.versionRow, { borderTopColor: colors.border }]}>
             <Text style={[typography.caption, { color: colors.textSecondary }]}>Version 1.0.0</Text>
             <Text style={[typography.caption, { color: colors.textSecondary }]}>SwiftDocs · Every doc tool, free.</Text>
@@ -151,15 +132,18 @@ function Section({ title, children }: React.PropsWithChildren<{ title: string }>
   );
 }
 
-function RowAction({ label, onPress, danger }: { label: string; onPress: () => void; danger?: boolean }) {
+function RowAction({ label, icon, onPress, danger }: { label: string; icon?: string; onPress: () => void; danger?: boolean }) {
   const { typography, colors } = useAppTheme();
+  const color = danger ? '#DC2626' : colors.textPrimary;
   return (
     <Pressable
       accessibilityRole="button"
       onPress={onPress}
-      style={{ paddingVertical: spacing.xs }}
+      style={{ paddingVertical: spacing.xs, flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}
     >
-      <Text style={[typography.bodyLarge, { color: danger ? '#DC2626' : colors.textPrimary }]}>{label}</Text>
+      {icon ? <Icon name={icon} size={18} color={color} /> : null}
+      <Text style={[typography.bodyLarge, { color, flex: 1 }]}>{label}</Text>
+      {!danger && <Icon name="chevron-right" size={16} color={colors.textSecondary} />}
     </Pressable>
   );
 }

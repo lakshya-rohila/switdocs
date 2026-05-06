@@ -78,7 +78,7 @@ export default function CompressPDFScreen({ navigation }: Props) {
         ))}
       </View>
 
-      <InfoBox icon="💡" text="Compression reduces file size while keeping content readable. Higher compression means smaller files but lower image quality." />
+      <InfoBox icon="info" text="Compression reduces file size while keeping content readable. Higher compression means smaller files but lower image quality." />
     </ToolShell>
   );
 }

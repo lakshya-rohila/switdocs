@@ -1,51 +1,61 @@
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useState } from 'react';
 import { Alert, View } from 'react-native';
-import { ToolShell, PickerCard, BigButton, InfoBox, OptionRow, ImagePreviewCard, SectionLabel } from '../../components/common/ToolShell';
+import {
+  ToolShell,
+  PickerCard,
+  BigButton,
+  InfoBox,
+  OptionRow,
+  ImagePreviewCard,
+  SectionLabel,
+} from '../../components/common/ToolShell';
 import { ProgressOverlay } from '../../components/common/ProgressOverlay';
 import { ROUTES } from '../../navigation/routes';
 import type { HomeStackParamList } from '../../types/navigation';
-import { useAppTheme } from '../../theme/ThemeProvider';
 import { spacing } from '../../theme/spacing';
 import { useFilePicker, type PickedFile } from '../../hooks/useFilePicker';
-import { shareLocalFile } from '../../utils/shareOpen';
+import { resizeImage } from '../../services/converter/ImageProcessor';
+import { showToast } from '../../utils/toast';
 
 type Props = NativeStackScreenProps<HomeStackParamList, typeof ROUTES.IMAGE_RESIZE>;
 
 const PRESETS = [
-  { key: '25', label: '25%', description: 'Quarter size · very small file' },
-  { key: '50', label: '50%', description: 'Half size · good for sharing' },
-  { key: '75', label: '75%', description: 'Three-quarters · high quality' },
-  { key: '100', label: '100%', description: 'Original size · no change' },
+  { key: '25', label: '25% — Thumbnail', description: 'Very small, great for previews' },
+  { key: '50', label: '50% — Half size', description: 'Good for messaging & sharing' },
+  { key: '75', label: '75% — Reduced', description: 'High quality, noticeably smaller' },
+  { key: '100', label: '100% — Original', description: 'No size change, re-saves as JPG' },
 ] as const;
 
 export default function ResizeImageScreen({ navigation }: Props) {
-  useAppTheme();
   const [busy, setBusy] = useState(false);
   const [picked, setPicked] = useState<PickedFile | null>(null);
   const [scale, setScale] = useState<'25' | '50' | '75' | '100'>('50');
+  const [done, setDone] = useState(false);
   const { pickImageFromFiles } = useFilePicker();
 
   async function pickFile() {
     setBusy(true);
     try {
       const file = await pickImageFromFiles();
-      if (file) setPicked(file);
+      if (file) { setPicked(file); setDone(false); }
     } finally {
       setBusy(false);
     }
   }
 
-  function resize() {
+  async function resize() {
     if (!picked) return;
-    Alert.alert(
-      'Not available offline',
-      'Image resizing requires a native codec not included in this build. You can share the original image.',
-      [
-        { text: 'Share original', onPress: () => shareLocalFile({ path: picked.uri, mime: picked.mime ?? 'image/jpeg', title: picked.name }).catch(() => {}) },
-        { text: 'Cancel', style: 'cancel' },
-      ],
-    );
+    setBusy(true);
+    try {
+      await resizeImage(picked.uri, parseInt(scale, 10));
+      setDone(true);
+      showToast.success('Resized & saved!', `Saved to Downloads as ${scale}% of original.`);
+    } catch (e) {
+      Alert.alert('Resize failed', e instanceof Error ? e.message : 'Could not resize image.');
+    } finally {
+      setBusy(false);
+    }
   }
 
   return (
@@ -54,15 +64,25 @@ export default function ResizeImageScreen({ navigation }: Props) {
       subtitle="Make it smaller or larger"
       navigation={navigation}
       bottomBar={
-        <BigButton label={`Resize to ${scale}%`} onPress={resize} disabled={!picked} loading={busy} />
+        <BigButton
+          label={busy ? 'Resizing…' : `Resize to ${scale}%`}
+          onPress={() => resize().catch(() => {})}
+          disabled={!picked || busy}
+          loading={busy}
+        />
       }
     >
-      <ProgressOverlay visible={busy} message="Loading…" />
+      <ProgressOverlay visible={busy} message="Resizing image…" />
 
       {picked ? (
         <>
-          <ImagePreviewCard uri={picked.uri} onRemove={() => setPicked(null)} />
-          <PickerCard label={picked.name} fileName={picked.name} fileSize={picked.size != null ? `${(picked.size / 1024).toFixed(0)} KB` : undefined} onPress={() => pickFile().catch(() => {})} />
+          <ImagePreviewCard uri={picked.uri} onRemove={() => { setPicked(null); setDone(false); }} />
+          <PickerCard
+            label={picked.name}
+            fileName={picked.name}
+            fileSize={picked.size != null ? `${(picked.size / 1024).toFixed(0)} KB original` : undefined}
+            onPress={() => pickFile().catch(() => {})}
+          />
         </>
       ) : (
         <PickerCard
@@ -81,12 +101,16 @@ export default function ResizeImageScreen({ navigation }: Props) {
             label={p.label}
             description={p.description}
             selected={scale === p.key}
-            onPress={() => setScale(p.key)}
+            onPress={() => { setScale(p.key); setDone(false); }}
           />
         ))}
       </View>
 
-      <InfoBox icon="📐" text="Resizing reduces the pixel dimensions of your image while keeping the aspect ratio." />
+      {done ? (
+        <InfoBox icon="check-circle" text="Image resized and saved to your Downloads folder." />
+      ) : (
+        <InfoBox icon="maximize-2" text="Resizing scales the image while keeping its aspect ratio. The original file is not changed." />
+      )}
     </ToolShell>
   );
 }

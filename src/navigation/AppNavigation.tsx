@@ -2,7 +2,6 @@ import {
   NavigationContainer,
   Theme as NavThemeType,
   DefaultTheme,
-  DarkTheme,
 } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React, { useMemo } from 'react';
@@ -17,10 +16,10 @@ import { useAppTheme } from '../theme/ThemeProvider';
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function RootNavigatorWithTheme() {
-  const { colors, mode } = useAppTheme();
+  const { colors } = useAppTheme();
 
   const navigationTheme = useMemo<NavThemeType>(() => {
-    const base = mode === 'dark' ? DarkTheme : DefaultTheme;
+    const base = DefaultTheme;
     return {
       ...base,
       colors: {
@@ -33,7 +32,7 @@ export default function RootNavigatorWithTheme() {
         notification: colors.accent,
       },
     };
-  }, [colors, mode]);
+  }, [colors]);
 
   return (
     <NavigationContainer theme={navigationTheme}>

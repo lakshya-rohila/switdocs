@@ -1,6 +1,7 @@
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useRef, useState } from 'react';
 import { Alert, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Icon } from '../../components/common/Icon';
 
 import { GhostButton } from '../../components/common/AppHeader';
 import { PrimaryButton } from '../../components/common/AppHeader';
@@ -56,7 +57,7 @@ export default function ESignatureScreen({ navigation }: Props) {
       {/* Header */}
       <View style={[styles.header, { borderBottomColor: colors.border, backgroundColor: colors.surface }]}>
         <Pressable accessibilityRole="button" hitSlop={16} onPress={() => navigation.goBack()}>
-          <Text style={[{ fontSize: 20, color: colors.primary }]}>✕</Text>
+          <Icon name="x" size={22} color={colors.primary} />
         </Pressable>
         <Text style={[typography.h3, { flex: 1, textAlign: 'center', color: colors.textPrimary }]}>
           E-Signature
@@ -100,9 +101,9 @@ export default function ESignatureScreen({ navigation }: Props) {
 function MethodCards({ method, onSelect }: { method: 'draw' | 'type' | 'upload'; onSelect: (m: typeof method) => void }) {
   const { typography, colors } = useAppTheme();
   const options = [
-    { id: 'draw' as const, icon: '✍️', title: 'Draw', subtitle: 'Sign with your finger or stylus' },
-    { id: 'type' as const, icon: '⌨️', title: 'Type', subtitle: 'Generate a signature from your name' },
-    { id: 'upload' as const, icon: '🖼️', title: 'Upload', subtitle: 'Use an existing signature image' },
+    { id: 'draw' as const, icon: 'edit-3', title: 'Draw', subtitle: 'Sign with your finger or stylus' },
+    { id: 'type' as const, icon: 'type', title: 'Type', subtitle: 'Generate a signature from your name' },
+    { id: 'upload' as const, icon: 'image', title: 'Upload', subtitle: 'Use an existing signature image' },
   ];
   return (
     <View style={{ gap: spacing.md }}>
@@ -118,12 +119,12 @@ function MethodCards({ method, onSelect }: { method: 'draw' | 'type' | 'upload';
             { borderColor: method === option.id ? colors.primary : colors.border, backgroundColor: method === option.id ? colors.primaryLight : colors.surface },
           ]}
         >
-          <Text style={{ fontSize: 28 }}>{option.icon}</Text>
+          <Icon name={option.icon} size={26} color={method === option.id ? colors.primary : colors.textSecondary} />
           <View style={{ flex: 1 }}>
             <Text style={[typography.label, { color: colors.textPrimary }]}>{option.title}</Text>
             <Text style={[typography.caption, { color: colors.textSecondary }]}>{option.subtitle}</Text>
           </View>
-          {method === option.id && <Text style={{ color: colors.primary, fontSize: 18 }}>✓</Text>}
+          {method === option.id && <Icon name="check-circle" size={20} color={colors.primary} />}
         </Pressable>
       ))}
     </View>
@@ -159,7 +160,8 @@ function AuthorWorkspace({
         </View>
         {drawing.length > 24 && (
           <View style={[styles.successBadge, { backgroundColor: '#F0FDF4', borderColor: '#16A34A' }]}>
-            <Text style={{ color: '#16A34A', fontWeight: '600' }}>✓ Signature captured</Text>
+            <Icon name="check-circle" size={16} color="#16A34A" />
+            <Text style={{ color: '#16A34A', fontWeight: '600', marginLeft: 6 }}>Signature captured</Text>
           </View>
         )}
       </View>
@@ -200,7 +202,7 @@ function AuthorWorkspace({
           onPress={() => pickImageFromFiles().then(f => { if (f) onUploaded(`file://${f.uri}`); }).catch(() => {})}
           style={[styles.uploadZone, { borderColor: colors.border, backgroundColor: colors.surface }]}
         >
-          <Text style={{ fontSize: 40 }}>📷</Text>
+          <Icon name="upload" size={40} color={colors.primary} />
           <Text style={[typography.bodyLarge, { color: colors.textPrimary, fontWeight: '600' }]}>Upload signature image</Text>
           <Text style={[typography.caption, { color: colors.textSecondary }]}>JPG or PNG from your gallery</Text>
         </Pressable>
@@ -238,8 +240,9 @@ function ExportDeck({ method, typed, drawSig, uploadedUri }: { method: 'draw' | 
       <Text style={[typography.body, { color: colors.textSecondary }]}>Your signature is ready. Save it to your gallery or share it.</Text>
 
       {method === 'draw' && drawSig ? (
-        <View style={[styles.successBadge, { backgroundColor: '#F0FDF4', borderColor: '#16A34A' }]}>
-          <Text style={{ color: '#16A34A', fontWeight: '600' }}>✓ Handwritten signature ready</Text>
+        <View style={[styles.successBadge, { backgroundColor: '#F0FDF4', borderColor: '#16A34A', flexDirection: 'row', alignItems: 'center', gap: 6 }]}>
+          <Icon name="check-circle" size={16} color="#16A34A" />
+          <Text style={{ color: '#16A34A', fontWeight: '600' }}>Handwritten signature ready</Text>
         </View>
       ) : method === 'type' && typed ? (
         <SignatureTypedPreview label={typed} />

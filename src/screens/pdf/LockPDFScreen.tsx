@@ -110,7 +110,7 @@ export default function LockPDFScreen({ navigation }: Props) {
       />
       {mismatch && <Text style={[typography.caption, { color: '#DC2626' }]}>Passwords don't match</Text>}
 
-      <InfoBox icon="🔒" text="The password will be required to open the PDF. Keep it somewhere safe — it cannot be recovered." />
+      <InfoBox icon="lock" text="The password will be required to open the PDF. Keep it somewhere safe — it cannot be recovered." />
     </ToolShell>
   );
 }

@@ -104,7 +104,7 @@ export default function SplitPDFScreen({ navigation }: Props) {
         </>
       ) : null}
 
-      <InfoBox icon="✂️" text="Split a large PDF into smaller parts for easy sharing or filing." />
+      <InfoBox icon="scissors" text="Split a large PDF into smaller parts for easy sharing or filing." />
     </ToolShell>
   );
 }

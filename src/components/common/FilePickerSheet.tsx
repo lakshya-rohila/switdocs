@@ -2,6 +2,7 @@ import React from 'react';
 import { Modal, Pressable, StyleSheet, Text, View, ViewStyle } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { GhostButton } from './AppHeader';
+import { Icon } from './Icon';
 import { modalShadow } from '../../theme/shadows';
 import { radius } from '../../theme/radius';
 import { spacing } from '../../theme/spacing';
@@ -21,7 +22,7 @@ export function FilePickerSheet({
   const insets = useSafeAreaInsets();
   const { colors, typography } = useAppTheme();
 
-  function row(icon: string, label: string, choice: FilePickerChoice, tint: string) {
+  function row(iconName: string, label: string, choice: FilePickerChoice, tint: string) {
     return (
       <Pressable
         accessibilityRole="button"
@@ -32,8 +33,9 @@ export function FilePickerSheet({
         }}
         style={[styles.option, { borderColor: colors.border, backgroundColor: colors.surface }]}
       >
-        <Text style={[typography.bodyLarge, { color: tint }]}>{icon}</Text>
+        <Icon name={iconName} size={22} color={tint} />
         <Text style={[typography.label, { flex: 1 }]}>{label}</Text>
+        <Icon name="chevron-right" size={16} color={colors.textSecondary} />
       </Pressable>
     );
   }
@@ -55,10 +57,10 @@ export function FilePickerSheet({
         >
           <View style={[styles.grabber, { backgroundColor: colors.border }]} />
           <Text style={[typography.h3, { marginBottom: spacing.lg }]}>Select File</Text>
-          {row('📁', 'Browse Files', 'files', colors.primary)}
-          {row('🖼', 'Choose from Photos', 'photos', colors.accent)}
-          {row('☁️', 'Google Drive', 'drive', colors.success)}
-          {row('🗂', 'Dropbox', 'dropbox', colors.warning)}
+          {row('folder', 'Browse Files', 'files', colors.primary)}
+          {row('image', 'Choose from Photos', 'photos', colors.accent)}
+          {row('cloud', 'Google Drive', 'drive', colors.success)}
+          {row('archive', 'Dropbox', 'dropbox', colors.warning)}
           <View style={{ marginTop: spacing.md }}>
             <GhostButton label="Cancel" onPress={onClose} />
           </View>

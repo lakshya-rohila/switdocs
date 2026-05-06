@@ -78,7 +78,7 @@ export default function RotatePDFScreen({ navigation }: Props) {
         ))}
       </View>
 
-      <InfoBox icon="🔄" text="Rotation applies to all pages. Rotates clockwise or counter-clockwise by the selected amount." />
+      <InfoBox icon="rotate-cw" text="Rotation applies to all pages. Rotates clockwise or counter-clockwise by the selected amount." />
     </ToolShell>
   );
 }
