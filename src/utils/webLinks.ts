@@ -1,7 +1,7 @@
 import { Linking, Alert } from 'react-native';
 
-// Update this URL once you publish to GitHub Pages
-const BASE_URL = 'https://yourusername.github.io/swiftdocs';
+// Your GitHub Pages URL
+const BASE_URL = 'https://lakshya-rohila.github.io/switdocs';
 
 export const WebLinks = {
   PRIVACY_POLICY: `${BASE_URL}/privacy-policy.html`,
@@ -20,7 +20,8 @@ export const openURL = async (url: string): Promise<void> => {
     if (supported) {
       await Linking.openURL(url);
     } else {
-      Alert.alert('Error', `Cannot open URL: ${url}`);
+      console.warn('Cannot open URL:', url);
+      Alert.alert('Error', 'Unable to open this link. Please try again.');
     }
   } catch (error) {
     console.error('Error opening URL:', error);
@@ -56,8 +57,39 @@ export const openHomePage = () => openURL(WebLinks.HOME);
 /**
  * Open support email
  */
-export const openSupportEmail = () => {
+export const openSupportEmail = async () => {
   const email = 'lakshyarohila21@gmail.com';
   const subject = 'SwiftDocs Support Request';
-  openURL(`mailto:${email}?subject=${encodeURIComponent(subject)}`);
+  const mailtoUrl = `mailto:${email}?subject=${encodeURIComponent(subject)}`;
+  
+  try {
+    const supported = await Linking.canOpenURL(mailtoUrl);
+    if (supported) {
+      await Linking.openURL(mailtoUrl);
+    } else {
+      // Fallback: show alert with email if mailto isn't supported
+      Alert.alert(
+        'Contact Support',
+        `Please email us at:\n${email}`,
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { 
+            text: 'Copy Email', 
+            onPress: () => {
+              // Note: You'll need to import Clipboard from '@react-native-clipboard/clipboard'
+              // For now, just show the email
+              console.log('Email:', email);
+            }
+          }
+        ]
+      );
+    }
+  } catch (error) {
+    console.error('Error opening email:', error);
+    Alert.alert(
+      'Contact Support',
+      `Please email us at:\n${email}`,
+      [{ text: 'OK' }]
+    );
+  }
 };

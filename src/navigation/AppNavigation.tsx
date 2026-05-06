@@ -19,11 +19,10 @@ export default function RootNavigatorWithTheme() {
   const { colors } = useAppTheme();
 
   const navigationTheme = useMemo<NavThemeType>(() => {
-    const base = DefaultTheme;
     return {
-      ...base,
+      ...DefaultTheme,
       colors: {
-        ...base.colors,
+        ...DefaultTheme.colors,
         primary: colors.primary,
         background: colors.background,
         card: colors.surface,
@@ -36,10 +35,21 @@ export default function RootNavigatorWithTheme() {
 
   return (
     <NavigationContainer theme={navigationTheme}>
-      <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName={ROUTES.ROOT_SPLASH}>
+      <Stack.Navigator
+        screenOptions={{ headerShown: false, animation: 'none' }}
+        initialRouteName={ROUTES.ROOT_SPLASH}
+      >
         <Stack.Screen name={ROUTES.ROOT_SPLASH} component={SplashScreen} />
-        <Stack.Screen name={ROUTES.ROOT_ONBOARDING} component={OnboardingFlowScreen} />
-        <Stack.Screen name={ROUTES.ROOT_MAIN} component={MainTabsNavigator} />
+        <Stack.Screen
+          name={ROUTES.ROOT_ONBOARDING}
+          component={OnboardingFlowScreen}
+          options={{ animation: 'fade' }}
+        />
+        <Stack.Screen
+          name={ROUTES.ROOT_MAIN}
+          component={MainTabsNavigator}
+          options={{ animation: 'fade' }}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );

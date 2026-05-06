@@ -16,6 +16,14 @@ import { radius } from '../../theme/radius';
 import { shareText } from '../../utils/shareOpen';
 import RNFS from 'react-native-fs';
 import { showToast } from '../../utils/toast';
+import { 
+  openPrivacyPolicy, 
+  openTermsOfService, 
+  openAbout, 
+  openSupport, 
+  openSupportEmail,
+  openHomePage 
+} from '../../utils/webLinks';
 
 type Props = NativeStackScreenProps<SettingsStackParamList, typeof ROUTES.SETTINGS>;
 
@@ -58,16 +66,30 @@ export default function SettingsScreen({ navigation }: Props) {
     ]);
   }
 
-  function openPrivacyPolicy() {
-    Linking.openURL('https://swiftdocs.app/privacy').catch(() =>
-      Alert.alert('Could not open', 'Visit swiftdocs.app/privacy in your browser.')
-    );
+  function openPrivacyPolicyLocal() {
+    openPrivacyPolicy();
+  }
+
+  function openTermsLocal() {
+    openTermsOfService();
+  }
+
+  function openSupportLocal() {
+    openSupport();
+  }
+
+  function openAboutLocal() {
+    openAbout();
+  }
+
+  function contactSupport() {
+    openSupportEmail();
   }
 
   function shareApp() {
     shareText({
       title: 'SwiftDocs',
-      message: 'Check out SwiftDocs — every document tool, zero ads, always free! https://swiftdocs.app',
+      message: 'Check out SwiftDocs — every document tool, zero ads, always free! https://lakshya-rohila.github.io/switdocs/',
     }).catch(() => {});
   }
 
@@ -106,7 +128,11 @@ export default function SettingsScreen({ navigation }: Props) {
         </Section>
 
         <Section title="About">
-          <RowAction label="Privacy Policy" icon="shield" onPress={openPrivacyPolicy} />
+          <RowAction label="About SwiftDocs" icon="info" onPress={openAboutLocal} />
+          <RowAction label="Privacy Policy" icon="shield" onPress={openPrivacyPolicyLocal} />
+          <RowAction label="Terms of Service" icon="file-text" onPress={openTermsLocal} />
+          <RowAction label="Help & Support" icon="help-circle" onPress={openSupportLocal} />
+          <RowAction label="Contact Us" icon="mail" onPress={contactSupport} />
           <RowAction label="Rate SwiftDocs" icon="star" onPress={rateApp} />
           <RowAction label="Share SwiftDocs" icon="share-2" onPress={shareApp} />
           <View style={[styles.versionRow, { borderTopColor: colors.border }]}>

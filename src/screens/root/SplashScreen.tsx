@@ -9,12 +9,13 @@ export type SplashProps = NativeStackScreenProps<RootStackParamList, typeof ROUT
 
 export default function SplashScreen({ navigation }: SplashProps) {
   useEffect(() => {
-    const timer = setTimeout(async () => {
-      const onboardingDone = await isOnboardingComplete();
-      navigation.replace(onboardingDone ? ROUTES.ROOT_MAIN : ROUTES.ROOT_ONBOARDING);
-    }, 1500);
-
-    return () => clearTimeout(timer);
+    let cancelled = false;
+    isOnboardingComplete().then(onboardingDone => {
+      if (!cancelled) {
+        navigation.replace(onboardingDone ? ROUTES.ROOT_MAIN : ROUTES.ROOT_ONBOARDING);
+      }
+    });
+    return () => { cancelled = true; };
   }, [navigation]);
 
   return (

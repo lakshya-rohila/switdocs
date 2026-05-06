@@ -15,6 +15,7 @@ import type { RootStackParamList } from '../../types/navigation';
 import { PrimaryButton } from '../../components/common/AppHeader';
 import { GhostButton } from '../../components/common/AppHeader';
 import { persistOnboardingComplete } from '../../utils/onboardingStorage';
+import { openPrivacyPolicy, openTermsOfService } from '../../utils/webLinks';
 
 export type BoardingProps = NativeStackScreenProps<
   RootStackParamList,
@@ -135,6 +136,21 @@ export default function OnboardingFlowScreen({ navigation }: BoardingProps) {
             ))}
           </View>
           <PrimaryButton label={slide === STEPS.length - 1 ? 'Continue' : 'Next'} onPress={goNextSlide} />
+          
+          {slide === STEPS.length - 1 && (
+            <View style={styles.legalLinks}>
+              <Text style={styles.legalText}>
+                By continuing, you agree to our{' '}
+                <Text style={styles.link} onPress={openTermsOfService}>
+                  Terms of Service
+                </Text>
+                {' '}and{' '}
+                <Text style={styles.link} onPress={openPrivacyPolicy}>
+                  Privacy Policy
+                </Text>
+              </Text>
+            </View>
+          )}
         </>
       ) : (
         <>
@@ -235,5 +251,19 @@ const styles = StyleSheet.create({
     fontSize: 36,
     fontWeight: '800',
     color: '#0F172A',
+  },
+  legalLinks: {
+    paddingHorizontal: 20,
+    paddingTop: 8,
+  },
+  legalText: {
+    fontSize: 12,
+    color: '#64748B',
+    textAlign: 'center',
+    lineHeight: 18,
+  },
+  link: {
+    color: '#2563EB',
+    fontWeight: '600',
   },
 });
