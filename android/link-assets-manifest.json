@@ -1,0 +1,13 @@
+{
+  "migIndex": 1,
+  "data": [
+    {
+      "path": "assets/fonts/.gitkeep",
+      "sha1": "da39a3ee5e6b4b0d3255bfef95601890afd80709"
+    },
+    {
+      "path": "assets/fonts/PTF-NORDIC-Rnd.ttf",
+      "sha1": "f66035122c2830bfae22391259e514d5334582bb"
+    }
+  ]
+}

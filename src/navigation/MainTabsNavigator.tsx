@@ -14,6 +14,19 @@ import type { MainTabParamList } from '../types/navigation';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
+/** Height of the floating bar card itself */
+export const TAB_BAR_HEIGHT = 64;
+
+/**
+ * Hook that returns the total bottom space consumed by the floating tab bar.
+ * Use this as paddingBottom on any scrollable screen inside the tab navigator.
+ */
+export function useTabBarBottomPadding() {
+  const insets = useSafeAreaInsets();
+  // bar height + bottom padding inside the wrapper + 8px breathing room
+  return TAB_BAR_HEIGHT + (insets.bottom > 0 ? insets.bottom : 12) + 8;
+}
+
 // ─── SVG Icon components ──────────────────────────────────────────────────────
 
 const STROKE = 1.6;

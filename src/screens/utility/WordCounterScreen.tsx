@@ -1,7 +1,9 @@
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useMemo, useState } from 'react';
-import { Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Icon } from '../../components/common/Icon';
+import { useModal } from '../../components/common/AppModal';
+import { useTabBarBottomPadding } from '../../navigation/MainTabsNavigator';
 
 import { AppHeader } from '../../components/common/AppHeader';
 import { ROUTES } from '../../navigation/routes';
@@ -18,7 +20,9 @@ export default function WordCounterScreen({ navigation }: Props) {
   const [source, setSource] = useState('');
   const stats = useMemo(() => tally(source), [source]);
   const { typography, colors } = useAppTheme();
+  const tabBarPadding = useTabBarBottomPadding();
   const { pickDocumentFromFiles } = useFilePicker();
+  const showModal = useModal();
 
   async function importFromFiles() {
     try {
@@ -29,7 +33,7 @@ export default function WordCounterScreen({ navigation }: Props) {
         const text = await RNFS.readFile(file.uri, 'utf8');
         setSource(text);
       } catch {
-        Alert.alert('Cannot read file', 'Only plain text (.txt) files can be imported for word counting.');
+        showModal({ title: 'Cannot read file', message: 'Only plain text (.txt) files can be imported for word counting.', buttons: [{ label: 'OK', style: 'cancel' }] });
       }
     } catch {
       // user cancelled
@@ -50,7 +54,7 @@ export default function WordCounterScreen({ navigation }: Props) {
           </Pressable>
         }
       />
-      <ScrollView contentContainerStyle={styles.sheet} keyboardShouldPersistTaps="handled">
+      <ScrollView contentContainerStyle={[styles.sheet, { paddingBottom: tabBarPadding + spacing.md }]} keyboardShouldPersistTaps="handled">
         <TextInput
           multiline
           value={source}

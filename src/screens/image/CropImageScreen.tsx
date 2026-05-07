@@ -1,6 +1,6 @@
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useState } from 'react';
-import { Alert, View } from 'react-native';
+import { View } from 'react-native';
 import {
   ToolShell,
   PickerCard,
@@ -17,6 +17,7 @@ import { spacing } from '../../theme/spacing';
 import { useFilePicker, type PickedFile } from '../../hooks/useFilePicker';
 import { cropImage, type CropRatio } from '../../services/converter/ImageProcessor';
 import { showToast } from '../../utils/toast';
+import { useModal } from '../../components/common/AppModal';
 
 type Props = NativeStackScreenProps<HomeStackParamList, typeof ROUTES.IMAGE_CROP>;
 
@@ -34,6 +35,7 @@ export default function CropImageScreen({ navigation }: Props) {
   const [ratio, setRatio] = useState<CropRatio>('free');
   const [croppedUri, setCroppedUri] = useState<string | null>(null);
   const { pickImageFromFiles } = useFilePicker();
+  const showModal = useModal();
 
   async function pickFile() {
     setBusy(true);
@@ -57,7 +59,7 @@ export default function CropImageScreen({ navigation }: Props) {
         `${result.width}×${result.height}px — saved to Downloads.`,
       );
     } catch (e) {
-      Alert.alert('Crop failed', e instanceof Error ? e.message : 'Could not crop image.');
+      showModal({ title: 'Crop failed', message: e instanceof Error ? e.message : 'Could not crop image.', buttons: [{ label: 'OK', style: 'cancel' }] });
     } finally {
       setBusy(false);
     }

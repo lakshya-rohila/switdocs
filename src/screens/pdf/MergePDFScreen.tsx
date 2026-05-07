@@ -1,6 +1,6 @@
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useState } from 'react';
-import { Alert, View } from 'react-native';
+import { View } from 'react-native';
 import { ToolShell, PickerCard, BigButton, InfoBox, SectionLabel } from '../../components/common/ToolShell';
 import { ProgressOverlay } from '../../components/common/ProgressOverlay';
 import { ROUTES } from '../../navigation/routes';
@@ -8,14 +8,19 @@ import type { HomeStackParamList } from '../../types/navigation';
 import { useAppTheme } from '../../theme/ThemeProvider';
 import { spacing } from '../../theme/spacing';
 import { useFilePicker, type PickedFile } from '../../hooks/useFilePicker';
+import { mergeMultiplePdfs } from '../../services/pdf/PDFMerger';
 import { shareLocalFile } from '../../utils/shareOpen';
+import { showToast } from '../../utils/toast';
+import { useModal } from '../../components/common/AppModal';
 
 type Props = NativeStackScreenProps<HomeStackParamList, typeof ROUTES.MERGE_PDF>;
 
 export default function MergePDFScreen({ navigation }: Props) {
   useAppTheme();
+  const showModal = useModal();
   const [busy, setBusy] = useState(false);
   const [files, setFiles] = useState<PickedFile[]>([]);
+  const [resultPath, setResultPath] = useState<string | null>(null);
   const { pickMultiplePdfs } = useFilePicker();
 
   async function addFiles() {
@@ -27,6 +32,7 @@ export default function MergePDFScreen({ navigation }: Props) {
           const existing = new Set(prev.map(f => f.uri));
           return [...prev, ...picked.filter(f => !existing.has(f.uri))];
         });
+        setResultPath(null);
       }
     } finally {
       setBusy(false);
@@ -35,21 +41,33 @@ export default function MergePDFScreen({ navigation }: Props) {
 
   function removeFile(uri: string) {
     setFiles(prev => prev.filter(f => f.uri !== uri));
+    setResultPath(null);
   }
 
-  function attemptMerge() {
+  async function merge() {
     if (files.length < 2) {
-      Alert.alert('Add more files', 'Please select at least 2 PDF files to merge.');
+      showModal({
+        title: 'Add more files',
+        message: 'Please select at least 2 PDF files to merge.',
+        buttons: [{ label: 'OK', style: 'cancel' }],
+      });
       return;
     }
-    Alert.alert(
-      'Not available offline',
-      'PDF merging requires a conversion engine not included in this build. You can share the files individually.',
-      [
-        { text: 'Share first PDF', onPress: () => shareLocalFile({ path: files[0].uri, mime: 'application/pdf', title: files[0].name }).catch(() => {}) },
-        { text: 'OK', style: 'cancel' },
-      ],
-    );
+    setBusy(true);
+    try {
+      const uris = files.map(f => f.uri);
+      const output = await mergeMultiplePdfs(uris);
+      setResultPath(output);
+      showToast.success('PDFs merged!', 'Saved to your Downloads folder.');
+    } catch (e) {
+      showModal({
+        title: 'Merge failed',
+        message: e instanceof Error ? e.message : 'Could not merge PDFs. Please try again.',
+        buttons: [{ label: 'OK', style: 'cancel' }],
+      });
+    } finally {
+      setBusy(false);
+    }
   }
 
   return (
@@ -60,11 +78,11 @@ export default function MergePDFScreen({ navigation }: Props) {
       bottomBar={
         <View style={{ gap: spacing.sm }}>
           <BigButton label="Add PDF files" onPress={() => addFiles().catch(() => {})} loading={busy} variant="ghost" />
-          <BigButton label={`Merge ${files.length} files`} onPress={attemptMerge} disabled={files.length < 2} />
+          <BigButton label={`Merge ${files.length} files`} onPress={() => merge().catch(() => {})} disabled={files.length < 2 || busy} loading={busy} />
         </View>
       }
     >
-      <ProgressOverlay visible={busy} message="Loading files…" />
+      <ProgressOverlay visible={busy} message="Merging PDFs…" />
 
       {files.length === 0 ? (
         <PickerCard
@@ -89,10 +107,14 @@ export default function MergePDFScreen({ navigation }: Props) {
         </>
       )}
 
-      <InfoBox
-        icon="info"
-        text="Merge PDFs combines multiple files in the order you add them. Drag to reorder is coming soon."
-      />
+      {resultPath ? (
+        <InfoBox icon="check-circle" text="PDFs merged and saved to your Downloads folder." />
+      ) : (
+        <InfoBox
+          icon="info"
+          text="Merge PDFs combines multiple files in the order you add them. Tap a file to remove it."
+        />
+      )}
     </ToolShell>
   );
 }

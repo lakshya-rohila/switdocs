@@ -14,15 +14,18 @@ import type { RootState } from './src/store';
 import RootNavigatorWithTheme from './src/navigation/AppNavigation';
 import { store } from './src/store';
 import { ThemeProvider } from './src/theme/ThemeProvider';
+import { AppModalProvider } from './src/components/common/AppModal';
 
 function ThemedChrome() {
   const appearance = useSelector((state: RootState) => state.settings.appearance);
 
   return (
     <ThemeProvider themeModePreference={appearance}>
-      <StatusBar translucent backgroundColor="transparent" />
-      <RootNavigatorWithTheme />
-      <Toast config={toastConfig} />
+      <AppModalProvider>
+        <StatusBar translucent backgroundColor="transparent" />
+        <RootNavigatorWithTheme />
+        <Toast config={toastConfig} />
+      </AppModalProvider>
     </ThemeProvider>
   );
 }

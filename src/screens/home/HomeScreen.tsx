@@ -8,11 +8,13 @@ import { AppHeader } from '../../components/common/AppHeader';
 import { ToolCardGridItem } from '../../components/common/ToolCard';
 import { useAppTheme } from '../../theme/ThemeProvider';
 import { spacing } from '../../theme/spacing';
+import { useTabBarBottomPadding } from '../../navigation/MainTabsNavigator';
 
 type Props = NativeStackScreenProps<HomeStackParamList, typeof ROUTES.HOME>;
 
 export default function HomeScreen({ navigation }: Props) {
   const { colors } = useAppTheme();
+  const tabBarPadding = useTabBarBottomPadding();
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>
@@ -20,7 +22,7 @@ export default function HomeScreen({ navigation }: Props) {
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.content}
+        contentContainerStyle={[styles.content, { paddingBottom: tabBarPadding + spacing.md }]}
       >
         {HOME_TOOL_SECTIONS.map(section => (
           <View key={section.title} style={styles.section}>

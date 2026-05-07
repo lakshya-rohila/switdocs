@@ -1,6 +1,6 @@
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useState } from 'react';
-import { Alert, View } from 'react-native';
+import { View } from 'react-native';
 import {
   ToolShell,
   PickerCard,
@@ -17,6 +17,7 @@ import { spacing } from '../../theme/spacing';
 import { useFilePicker, type PickedFile } from '../../hooks/useFilePicker';
 import { resizeImage } from '../../services/converter/ImageProcessor';
 import { showToast } from '../../utils/toast';
+import { useModal } from '../../components/common/AppModal';
 
 type Props = NativeStackScreenProps<HomeStackParamList, typeof ROUTES.IMAGE_RESIZE>;
 
@@ -33,6 +34,7 @@ export default function ResizeImageScreen({ navigation }: Props) {
   const [scale, setScale] = useState<'25' | '50' | '75' | '100'>('50');
   const [done, setDone] = useState(false);
   const { pickImageFromFiles } = useFilePicker();
+  const showModal = useModal();
 
   async function pickFile() {
     setBusy(true);
@@ -52,7 +54,7 @@ export default function ResizeImageScreen({ navigation }: Props) {
       setDone(true);
       showToast.success('Resized & saved!', `Saved to Downloads as ${scale}% of original.`);
     } catch (e) {
-      Alert.alert('Resize failed', e instanceof Error ? e.message : 'Could not resize image.');
+      showModal({ title: 'Resize failed', message: e instanceof Error ? e.message : 'Could not resize image.', buttons: [{ label: 'OK', style: 'cancel' }] });
     } finally {
       setBusy(false);
     }

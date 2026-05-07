@@ -14,6 +14,7 @@ import { spacing } from '../../theme/spacing';
 import { radius } from '../../theme/radius';
 import { formatColors } from '../../theme/colors';
 import { useAppTheme } from '../../theme/ThemeProvider';
+import { FONT } from '../../theme/typography';
 
 type AppHeaderVariant = 'main' | 'inner';
 
@@ -268,8 +269,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  logoLetter: { color: '#FFFFFF', fontSize: 20, fontWeight: '800', letterSpacing: -0.5 },
-  brandWord: { fontSize: 20, fontWeight: '800', letterSpacing: -0.3 },
+  logoLetter: { color: '#FFFFFF', fontSize: 20, fontWeight: '800', letterSpacing: -0.5, fontFamily: FONT },
+  brandWord: { fontSize: 20, fontWeight: '800', letterSpacing: -0.3, fontFamily: FONT },
   leftTitleRow: {
     flex: 1,
     flexDirection: 'row',

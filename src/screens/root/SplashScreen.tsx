@@ -3,18 +3,20 @@ import React, { useEffect } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import { ROUTES } from '../../navigation/routes';
 import type { RootStackParamList } from '../../types/navigation';
-import { isOnboardingComplete } from '../../utils/onboardingStorage';
+import { FONT } from '../../theme/typography';
 
 export type SplashProps = NativeStackScreenProps<RootStackParamList, typeof ROUTES.ROOT_SPLASH>;
 
 export default function SplashScreen({ navigation }: SplashProps) {
   useEffect(() => {
     let cancelled = false;
-    isOnboardingComplete().then(onboardingDone => {
+    // Always go straight to the main app — no onboarding gate
+    const go = async () => {
       if (!cancelled) {
-        navigation.replace(onboardingDone ? ROUTES.ROOT_MAIN : ROUTES.ROOT_ONBOARDING);
+        navigation.replace(ROUTES.ROOT_MAIN);
       }
-    });
+    };
+    go();
     return () => { cancelled = true; };
   }, [navigation]);
 
@@ -36,8 +38,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 28,
   },
   center: { justifyContent: 'center', alignItems: 'center' },
-  wordmark: { color: '#FFFFFF', fontWeight: '700', fontSize: 32 },
+  wordmark: { color: '#FFFFFF', fontWeight: '700', fontSize: 36, fontFamily: FONT, letterSpacing: 0.5 },
   accent: { color: '#EFF6FF' },
-  tag: { color: '#FFFFFF', opacity: 0.88, marginTop: 14, fontSize: 14, textAlign: 'center' },
+  tag: { color: '#FFFFFF', opacity: 0.88, marginTop: 14, fontSize: 15, textAlign: 'center', fontFamily: FONT },
   spinner: { marginTop: 48 },
 });

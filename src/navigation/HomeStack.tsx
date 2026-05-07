@@ -3,12 +3,8 @@ import React from 'react';
 
 import CompressPDFScreen from '../screens/pdf/CompressPDFScreen';
 import CreatePDFScreen from '../screens/pdf/CreatePDFScreen';
-import LockPDFScreen from '../screens/pdf/LockPDFScreen';
 import MergePDFScreen from '../screens/pdf/MergePDFScreen';
-import RotatePDFScreen from '../screens/pdf/RotatePDFScreen';
 import SplitPDFScreen from '../screens/pdf/SplitPDFScreen';
-import UnlockPDFScreen from '../screens/pdf/UnlockPDFScreen';
-import WatermarkPDFScreen from '../screens/pdf/WatermarkPDFScreen';
 import CropImageScreen from '../screens/image/CropImageScreen';
 import ImageCompressScreen from '../screens/image/ImageCompressScreen';
 import ImageConverterScreen from '../screens/image/ImageConverterScreen';
@@ -39,10 +35,6 @@ export default function HomeStackNavigator() {
       <Stack.Screen name={ROUTES.MERGE_PDF} component={MergePDFScreen} />
       <Stack.Screen name={ROUTES.SPLIT_PDF} component={SplitPDFScreen} />
       <Stack.Screen name={ROUTES.COMPRESS_PDF} component={CompressPDFScreen} />
-      <Stack.Screen name={ROUTES.ROTATE_PDF} component={RotatePDFScreen} />
-      <Stack.Screen name={ROUTES.WATERMARK_PDF} component={WatermarkPDFScreen} />
-      <Stack.Screen name={ROUTES.LOCK_PDF} component={LockPDFScreen} />
-      <Stack.Screen name={ROUTES.UNLOCK_PDF} component={UnlockPDFScreen} />
       <Stack.Screen name={ROUTES.IMAGE_CONVERTER} component={ImageConverterScreen} />
       <Stack.Screen name={ROUTES.IMAGE_COMPRESS} component={ImageCompressScreen} />
       <Stack.Screen name={ROUTES.IMAGE_RESIZE} component={ResizeImageScreen} />

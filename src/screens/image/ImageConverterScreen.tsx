@@ -1,6 +1,6 @@
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useState } from 'react';
-import { Alert, View } from 'react-native';
+import { View } from 'react-native';
 import {
   ToolShell,
   PickerCard,
@@ -17,6 +17,7 @@ import { spacing } from '../../theme/spacing';
 import { useFilePicker, type PickedFile } from '../../hooks/useFilePicker';
 import { convertImage, type ConvertFormat } from '../../services/converter/ImageProcessor';
 import { showToast } from '../../utils/toast';
+import { useModal } from '../../components/common/AppModal';
 
 type Props = NativeStackScreenProps<HomeStackParamList, typeof ROUTES.IMAGE_CONVERTER>;
 
@@ -32,6 +33,7 @@ export default function ImageConverterScreen({ navigation }: Props) {
   const [format, setFormat] = useState<ConvertFormat>('JPG');
   const [done, setDone] = useState(false);
   const { pickImageFromFiles } = useFilePicker();
+  const showModal = useModal();
 
   async function pickFile() {
     setBusy(true);
@@ -51,7 +53,7 @@ export default function ImageConverterScreen({ navigation }: Props) {
       setDone(true);
       showToast.success(`Converted to ${format}!`, 'File saved to your Downloads folder.');
     } catch (e) {
-      Alert.alert('Conversion failed', e instanceof Error ? e.message : 'Could not convert image.');
+      showModal({ title: 'Conversion failed', message: e instanceof Error ? e.message : 'Could not convert image.', buttons: [{ label: 'OK', style: 'cancel' }] });
     } finally {
       setBusy(false);
     }

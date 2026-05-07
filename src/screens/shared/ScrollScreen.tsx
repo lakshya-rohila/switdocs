@@ -6,6 +6,7 @@ import { AppHeader } from '../../components/common/AppHeader';
 import type { ResolvedThemeColors } from '../../theme/ThemeProvider';
 import { spacing } from '../../theme/spacing';
 import { useAppTheme } from '../../theme/ThemeProvider';
+import { useTabBarBottomPadding } from '../../navigation/MainTabsNavigator';
 
 export function ScrollScreen({
   title,
@@ -18,13 +19,14 @@ export function ScrollScreen({
   right?: ReactElement;
 }>): ReactElement {
   const { colors } = useAppTheme();
+  const tabBarPadding = useTabBarBottomPadding();
   return (
     <View style={[styles.root, { backgroundColor: colors.background }]}>
       <AppHeader variant="inner" title={title} navigation={navigation} right={right} />
       <ScrollView
         keyboardShouldPersistTaps="handled"
         contentInsetAdjustmentBehavior="automatic"
-        contentContainerStyle={[styles.pad, gutter(colors)]}>
+        contentContainerStyle={[styles.pad, gutter(colors), { paddingBottom: tabBarPadding + spacing.md }]}>
         {children}
       </ScrollView>
     </View>

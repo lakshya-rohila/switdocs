@@ -19,10 +19,6 @@ export const ROUTES = {
   MERGE_PDF: 'MergePDF',
   SPLIT_PDF: 'SplitPDF',
   COMPRESS_PDF: 'CompressPDF',
-  ROTATE_PDF: 'RotatePDF',
-  WATERMARK_PDF: 'WatermarkPDF',
-  LOCK_PDF: 'LockPDF',
-  UNLOCK_PDF: 'UnlockPDF',
 
   IMAGE_CONVERTER: 'ImageConverter',
   IMAGE_COMPRESS: 'ImageCompress',

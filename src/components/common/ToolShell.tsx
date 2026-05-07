@@ -22,6 +22,7 @@ import { useAppTheme } from '../../theme/ThemeProvider';
 import { spacing } from '../../theme/spacing';
 import { radius } from '../../theme/radius';
 import { Icon } from './Icon';
+import { useTabBarBottomPadding } from '../../navigation/MainTabsNavigator';
 
 // ─── ToolShell ────────────────────────────────────────────────────────────────
 
@@ -36,6 +37,7 @@ type ToolShellProps = PropsWithChildren<{
 export function ToolShell({ title, subtitle, navigation, bottomBar, children }: ToolShellProps) {
   const { colors, typography } = useAppTheme();
   const insets = useSafeAreaInsets();
+  const tabBarPadding = useTabBarBottomPadding();
 
   return (
     <View style={[styles.root, { backgroundColor: colors.background }]}>
@@ -60,14 +62,31 @@ export function ToolShell({ title, subtitle, navigation, bottomBar, children }: 
       {/* Scrollable body */}
       <ScrollView
         keyboardShouldPersistTaps="handled"
-        contentContainerStyle={[styles.body, { paddingBottom: bottomBar ? 0 : spacing.xxxl + insets.bottom }]}
+        contentContainerStyle={[
+          styles.body,
+          {
+            // When there's a sticky bottom bar, add tab bar space below the bar.
+            // When there's no bottom bar, add tab bar space directly to the scroll content.
+            paddingBottom: bottomBar ? tabBarPadding : tabBarPadding + spacing.md,
+          },
+        ]}
       >
         {children}
       </ScrollView>
 
       {/* Sticky bottom bar */}
       {bottomBar ? (
-        <View style={[styles.bottomBar, { backgroundColor: colors.surface, borderTopColor: colors.border, paddingBottom: insets.bottom + spacing.sm }]}>
+        <View
+          style={[
+            styles.bottomBar,
+            {
+              backgroundColor: colors.surface,
+              borderTopColor: colors.border,
+              // Sit the bottom bar above the floating tab bar
+              paddingBottom: tabBarPadding,
+            },
+          ]}
+        >
           {bottomBar}
         </View>
       ) : null}

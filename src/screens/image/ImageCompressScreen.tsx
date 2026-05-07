@@ -1,6 +1,6 @@
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useMemo, useState } from 'react';
-import { Alert, Pressable, Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 import {
   ToolShell,
   PickerCard,
@@ -17,6 +17,7 @@ import { spacing } from '../../theme/spacing';
 import { useFilePicker, type PickedFile } from '../../hooks/useFilePicker';
 import { compressImage } from '../../services/converter/ImageProcessor';
 import { showToast } from '../../utils/toast';
+import { useModal } from '../../components/common/AppModal';
 
 type Props = NativeStackScreenProps<HomeStackParamList, typeof ROUTES.IMAGE_COMPRESS>;
 
@@ -27,6 +28,7 @@ export default function ImageCompressScreen({ navigation }: Props) {
   const [quality, setQuality] = useState(75);
   const [resultPath, setResultPath] = useState<string | null>(null);
   const { pickImageFromFiles } = useFilePicker();
+  const showModal = useModal();
 
   const estimate = useMemo(() => {
     if (!picked?.size) return `Quality: ${quality}%`;
@@ -58,7 +60,7 @@ export default function ImageCompressScreen({ navigation }: Props) {
           : 'File saved to Downloads.',
       );
     } catch (e) {
-      Alert.alert('Compression failed', e instanceof Error ? e.message : 'Could not compress image.');
+      showModal({ title: 'Compression failed', message: e instanceof Error ? e.message : 'Could not compress image.', buttons: [{ label: 'OK', style: 'cancel' }] });
     } finally {
       setBusy(false);
     }

@@ -7,6 +7,7 @@ import {
   pick,
   types as DocTypes,
 } from '@react-native-documents/picker';
+import ImageCropPicker from 'react-native-image-crop-picker';
 
 export type PickedFile = {
   uri: string;
@@ -91,40 +92,34 @@ export function useFilePicker() {
 
   const pickImageFromFiles = useCallback(async (): Promise<PickedFile | null> => {
     try {
-      const [res] = await pick({
-        type: [DocTypes.images],
-        allowMultiSelection: false,
-        mode: 'import',
+      // Use ImageCropPicker.openPicker — opens the native photo gallery on both platforms
+      // and always returns a local file:// path, so RNFS can read it directly.
+      const result = await ImageCropPicker.openPicker({
+        mediaType: 'photo',
+        cropping: false,
+        includeBase64: false,
+        includeExif: false,
       });
-      if (!res?.uri || res.error) {
-        return null;
-      }
 
-      const name = res.name ?? 'image.jpg';
+      if (!result?.path) return null;
 
-      const copied = await keepLocalCopy({
-        files: [{ uri: res.uri, fileName: name }],
-        destination: 'cachesDirectory',
-      });
-      const first = copied[0];
-      let stable: string;
-      if (first?.status === 'success') {
-        const u = first.localUri;
-        stable = u.startsWith('file://') ? u.slice('file://'.length) : u;
-      } else {
-        stable = await stabilizeUri(res.uri, name);
-      }
+      // Normalize to bare path (no file:// prefix)
+      const bare = result.path.startsWith('file://')
+        ? result.path.slice('file://'.length)
+        : result.path;
+
+      const filename = result.filename
+        ?? bare.split('/').pop()
+        ?? `image-${Date.now()}.jpg`;
 
       return {
-        uri: stable,
-        name,
-        mime: res.type ?? 'image/jpeg',
-        size: res.size ?? null,
+        uri: bare,
+        name: filename,
+        mime: result.mime ?? 'image/jpeg',
+        size: result.size ?? null,
       };
     } catch (e: unknown) {
-      if (isUserCancelled(e)) {
-        return null;
-      }
+      // user cancelled (error code 'E_PICKER_CANCELLED') or other
       return null;
     }
   }, []);

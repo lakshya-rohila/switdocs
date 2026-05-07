@@ -23,8 +23,10 @@ import { spacing } from '../../theme/spacing';
 import { radius } from '../../theme/radius';
 import { shareLocalFile } from '../../utils/shareOpen';
 import { saveToDownloads } from '../../utils/downloader';
+import { useTabBarBottomPadding } from '../../navigation/MainTabsNavigator';
 import { showToast } from '../../utils/toast';
 import { useFilePicker } from '../../hooks/useFilePicker';
+import { useModal } from '../../components/common/AppModal';
 import {
   buildHtmlFromBlocks,
   type Block,
@@ -190,6 +192,8 @@ function ImageBlockRow({
 
 export default function CreatePDFScreen({ navigation }: Props) {
   const { colors, typography } = useAppTheme();
+  const tabBarPadding = useTabBarBottomPadding();
+  const showModal = useModal();
   const { pickImageFromFiles } = useFilePicker();
 
   const [title, setTitle] = useState('');
@@ -240,21 +244,25 @@ export default function CreatePDFScreen({ navigation }: Props) {
   }, [focusedId, updateBlock]);
 
   const clearAll = useCallback(() => {
-    Alert.alert('Clear document', 'Remove all content?', [
-      {
-        text: 'Clear',
-        style: 'destructive',
-        onPress: () => {
-          const nb = makeTextBlock();
-          setTitle('');
-          setBlocks([nb]);
-          setFocusedId(nb.id);
-          setSavedPath(null);
+    showModal({
+      title: 'Clear document',
+      message: 'Remove all content? This cannot be undone.',
+      buttons: [
+        {
+          label: 'Clear',
+          style: 'destructive',
+          onPress: () => {
+            const nb = makeTextBlock();
+            setTitle('');
+            setBlocks([nb]);
+            setFocusedId(nb.id);
+            setSavedPath(null);
+          },
         },
-      },
-      { text: 'Cancel', style: 'cancel' },
-    ]);
-  }, []);
+        { label: 'Cancel', style: 'cancel' },
+      ],
+    });
+  }, [showModal]);
 
   // ── PDF generation ───────────────────────────────────────────────────────────
 
@@ -301,7 +309,7 @@ export default function CreatePDFScreen({ navigation }: Props) {
         showToast.success('PDF ready!', 'Tap Share to send it anywhere.');
       }
     } catch {
-      Alert.alert('PDF error', 'Could not generate the PDF. Please try again.');
+      showModal({ title: 'PDF error', message: 'Could not generate the PDF. Please try again.', buttons: [{ label: 'OK', style: 'cancel' }] });
     } finally {
       setBusy(false);
     }
@@ -343,7 +351,7 @@ export default function CreatePDFScreen({ navigation }: Props) {
       <ScrollView
         ref={scrollRef}
         style={styles.canvas}
-        contentContainerStyle={styles.canvasContent}
+        contentContainerStyle={[styles.canvasContent, { paddingBottom: tabBarPadding + spacing.xxxl }]}
         keyboardShouldPersistTaps="handled"
       >
         {/* Document page card */}
@@ -408,7 +416,7 @@ export default function CreatePDFScreen({ navigation }: Props) {
       )}
 
       {/* ── Sticky bottom bar ── */}
-      <View style={[styles.bottomBar, { backgroundColor: colors.surface, borderTopColor: colors.border }]}>
+      <View style={[styles.bottomBar, { backgroundColor: colors.surface, borderTopColor: colors.border, paddingBottom: tabBarPadding }]}>
         {savedPath ? (
           <Pressable
             accessibilityRole="button"

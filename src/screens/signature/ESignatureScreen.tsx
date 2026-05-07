@@ -1,7 +1,9 @@
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useRef, useState } from 'react';
-import { Alert, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Icon } from '../../components/common/Icon';
+import { useModal } from '../../components/common/AppModal';
+import { useTabBarBottomPadding } from '../../navigation/MainTabsNavigator';
 
 import { GhostButton } from '../../components/common/AppHeader';
 import { PrimaryButton } from '../../components/common/AppHeader';
@@ -23,6 +25,8 @@ const PHASES = ['Method', 'Sign', 'Export'] as const;
 
 export default function ESignatureScreen({ navigation }: Props) {
   const { typography, colors } = useAppTheme();
+  const tabBarPadding = useTabBarBottomPadding();
+  const showModal = useModal();
   const [phase, setPhase] = useState<(typeof PHASES)[number]>('Method');
   const [method, setMethod] = useState<'draw' | 'type' | 'upload'>('draw');
   const [typed, setTyped] = useState('');
@@ -35,15 +39,15 @@ export default function ESignatureScreen({ navigation }: Props) {
     } else if (phase === 'Sign') {
       // Validate before moving to export
       if (method === 'draw' && !drawSig) {
-        Alert.alert('No signature', 'Draw your signature then tap "Capture" before continuing.');
+        showModal({ title: 'No signature', message: 'Draw your signature then tap Capture before continuing.', buttons: [{ label: 'OK', style: 'cancel' }] });
         return;
       }
       if (method === 'type' && !typed.trim()) {
-        Alert.alert('Enter your name', 'Type your name before continuing.');
+        showModal({ title: 'Enter your name', message: 'Type your name before continuing.', buttons: [{ label: 'OK', style: 'cancel' }] });
         return;
       }
       if (method === 'upload' && !uploadedUri) {
-        Alert.alert('No image', 'Upload a signature image before continuing.');
+        showModal({ title: 'No image', message: 'Upload a signature image before continuing.', buttons: [{ label: 'OK', style: 'cancel' }] });
         return;
       }
       setPhase('Export');
@@ -67,7 +71,7 @@ export default function ESignatureScreen({ navigation }: Props) {
 
       <ScrollView
         keyboardShouldPersistTaps="handled"
-        contentContainerStyle={styles.body}
+        contentContainerStyle={[styles.body, { paddingBottom: tabBarPadding + spacing.md }]}
       >
         <Segmented items={[...PHASES]} value={phase} onChange={setPhase} />
 
@@ -215,24 +219,25 @@ function AuthorWorkspace({
 
 function ExportDeck({ method, typed, drawSig, uploadedUri }: { method: 'draw' | 'type' | 'upload'; typed: string; drawSig: string; uploadedUri: string | null }) {
   const { typography, colors } = useAppTheme();
+  const showModal = useModal();
   const [exporting, setExporting] = useState(false);
 
   async function saveToGallery() {
     if (method === 'draw') {
-      if (!drawSig) { Alert.alert('No signature', 'Go back and capture your signature first.'); return; }
+      if (!drawSig) { showModal({ title: 'No signature', message: 'Go back and capture your signature first.', buttons: [{ label: 'OK', style: 'cancel' }] }); return; }
       setExporting(true);
       try { await exportSignatureAsset(drawSig, 'png'); } finally { setExporting(false); }
       return;
     }
     if (method === 'type') {
-      Alert.alert('Typed signature', 'Typed signature export to gallery coming soon. For now, screenshot your signature from the Sign step.');
+      showModal({ title: 'Typed signature', message: 'Typed signature export coming soon. Screenshot your signature from the Sign step for now.', buttons: [{ label: 'OK', style: 'cancel' }] });
       return;
     }
     if (method === 'upload' && uploadedUri) {
-      Alert.alert('Uploaded image', 'Your uploaded image is already in your gallery.');
+      showModal({ title: 'Already saved', message: 'Your uploaded image is already in your gallery.', buttons: [{ label: 'OK', style: 'cancel' }] });
       return;
     }
-    Alert.alert('Nothing to export', 'Go back and complete the Sign step.');
+    showModal({ title: 'Nothing to export', message: 'Go back and complete the Sign step first.', buttons: [{ label: 'OK', style: 'cancel' }] });
   }
 
   return (

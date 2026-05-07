@@ -15,7 +15,7 @@ const initialState: SettingsState = {
   appearance: 'light',
   defaultExportFormat: 'pdf',
   defaultSaveLocation: 'internal',
-  conversionQualityPreset: 'medium',
+  conversionQualityPreset: 'high',
   autoSaveConvertedFiles: true,
 };
 

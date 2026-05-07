@@ -1,7 +1,9 @@
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useMemo, useState } from 'react';
-import { Alert, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Icon } from '../../components/common/Icon';
+import { useModal } from '../../components/common/AppModal';
+import { useTabBarBottomPadding } from '../../navigation/MainTabsNavigator';
 import { ROUTES } from '../../navigation/routes';
 import type { RecentStackParamList } from '../../types/navigation';
 import { AppHeader } from '../../components/common/AppHeader';
@@ -59,18 +61,20 @@ function iconColorForFile(name: string) {
 export default function RecentFilesScreen({ navigation }: Props) {
   const { typography, colors } = useAppTheme();
   const dispatch = useAppDispatch();
+  const tabBarPadding = useTabBarBottomPadding();
+  const showModal = useModal();
   const reduxFiles = useAppSelector(state => state.recentFiles.items);
   const [filter, setFilter] = useState<(typeof FILTERS)[number]>('All');
 
   const visible = useMemo(() => filterRows(reduxFiles, filter), [reduxFiles, filter]);
 
   function openFileMenu(item: FileRecord) {
-    Alert.alert(
-      item.name,
-      item.sizeBytes ? formatBytes(item.sizeBytes) : '',
-      [
+    showModal({
+      title: item.name,
+      message: item.sizeBytes ? formatBytes(item.sizeBytes) : 'Select an action',
+      buttons: [
         {
-          text: 'Share file',
+          label: 'Share file',
           onPress: () =>
             shareLocalFile({
               path: item.uri,
@@ -79,13 +83,13 @@ export default function RecentFilesScreen({ navigation }: Props) {
             }).catch(() => {}),
         },
         {
-          text: 'Remove from list',
+          label: 'Remove from list',
           style: 'destructive',
           onPress: () => dispatch(recentFilesActions.removeRecent(item.id)),
         },
-        { text: 'Cancel', style: 'cancel' },
+        { label: 'Cancel', style: 'cancel' },
       ],
-    );
+    });
   }
 
   return (
@@ -106,7 +110,7 @@ export default function RecentFilesScreen({ navigation }: Props) {
             onActionPress={() => navigation.getParent()?.navigate(ROUTES.TAB_HOME as never)}
           />
         }
-        contentContainerStyle={{ paddingBottom: spacing.xxxl, flexGrow: 1 }}
+        contentContainerStyle={{ paddingBottom: tabBarPadding + spacing.md, flexGrow: 1 }}
         keyExtractor={item => item.id}
         ItemSeparatorComponent={() => (
           <View style={{ height: StyleSheet.hairlineWidth, backgroundColor: colors.border, marginLeft: spacing.screenHorizontal + 52 }} />

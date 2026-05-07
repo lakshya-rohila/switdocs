@@ -1,7 +1,7 @@
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import QRCode from 'qrcode';
 import React, { useMemo, useState } from 'react';
-import { Alert, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import QRCodeSvg from 'react-native-qrcode-svg';
 import RNFS from 'react-native-fs';
 
@@ -15,6 +15,7 @@ import { useAppTheme } from '../../theme/ThemeProvider';
 import { spacing } from '../../theme/spacing';
 import { shareLocalFile, shareText } from '../../utils/shareOpen';
 import { ScrollScreen } from '../shared/ScrollScreen';
+import { useModal } from '../../components/common/AppModal';
 
 type Props = NativeStackScreenProps<HomeStackParamList, typeof ROUTES.QR_GENERATOR>;
 
@@ -35,6 +36,7 @@ export default function QRGeneratorScreen({ navigation }: Props) {
   const [url, setUrl] = useState('https://example.com');
   const [payloadText, setPayloadText] = useState('');
   const { typography, colors } = useAppTheme();
+  const showModal = useModal();
 
   const qrValue = useMemo(() => {
     if (variant === 'URL') {
@@ -79,7 +81,7 @@ export default function QRGeneratorScreen({ navigation }: Props) {
       await RNFS.writeFile(path, svg, 'utf8');
       await shareLocalFile({ path, mime: 'image/svg+xml', title: 'QR export' });
     } catch {
-      Alert.alert('Could not persist QR markup');
+      showModal({ title: 'Export failed', message: 'Could not save QR code.', buttons: [{ label: 'OK', style: 'cancel' }] });
     }
   }
 

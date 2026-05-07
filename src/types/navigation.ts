@@ -9,10 +9,6 @@ export type HomeStackParamList = {
   [ROUTES.MERGE_PDF]: undefined;
   [ROUTES.SPLIT_PDF]: undefined;
   [ROUTES.COMPRESS_PDF]: undefined;
-  [ROUTES.ROTATE_PDF]: undefined;
-  [ROUTES.WATERMARK_PDF]: undefined;
-  [ROUTES.LOCK_PDF]: undefined;
-  [ROUTES.UNLOCK_PDF]: undefined;
   [ROUTES.IMAGE_CONVERTER]: undefined;
   [ROUTES.IMAGE_COMPRESS]: undefined;
   [ROUTES.IMAGE_RESIZE]: undefined;
