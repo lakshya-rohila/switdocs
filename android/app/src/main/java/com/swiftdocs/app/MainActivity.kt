@@ -1,4 +1,4 @@
-package com.swiftdocs
+package com.swiftdocs.app
 
 import android.os.Bundle
 import com.facebook.react.ReactActivity

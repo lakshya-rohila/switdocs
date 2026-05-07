@@ -14,16 +14,11 @@ export type HomeStackParamList = {
   [ROUTES.IMAGE_RESIZE]: undefined;
   [ROUTES.IMAGE_CROP]: undefined;
   [ROUTES.QR_GENERATOR]: undefined;
-  [ROUTES.QR_SCANNER]: undefined;
   [ROUTES.WORD_COUNTER]: undefined;
 };
 
 export type RecentStackParamList = {
   [ROUTES.RECENT_FILES]: undefined;
-};
-
-export type ScannerStackParamList = {
-  [ROUTES.QR_SCANNER]: undefined;
 };
 
 export type SettingsStackParamList = {
@@ -33,7 +28,6 @@ export type SettingsStackParamList = {
 export type MainTabParamList = {
   [ROUTES.TAB_HOME]: undefined;
   [ROUTES.TAB_RECENT]: undefined;
-  [ROUTES.TAB_SCANNER]: undefined;
   [ROUTES.TAB_SETTINGS]: undefined;
 };
 

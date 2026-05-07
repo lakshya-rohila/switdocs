@@ -5,7 +5,6 @@ export const ROUTES = {
 
   TAB_HOME: 'TabHome',
   TAB_RECENT: 'TabRecent',
-  TAB_SCANNER: 'TabScanner',
   TAB_SETTINGS: 'TabSettings',
 
   HOME: 'Home',
@@ -26,7 +25,6 @@ export const ROUTES = {
   IMAGE_CROP: 'ImageCrop',
 
   QR_GENERATOR: 'QRGenerator',
-  QR_SCANNER: 'QRScanner',
 
   RECENT_FILES: 'RecentFiles',
   SETTINGS: 'Settings',

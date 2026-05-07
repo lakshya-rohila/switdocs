@@ -2,12 +2,11 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import React from 'react';
 import { Pressable, StyleSheet, View, Platform } from 'react-native';
-import Svg, { Path, Circle, Line } from 'react-native-svg';
+import Svg, { Path, Circle } from 'react-native-svg';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import HomeStackNavigator from './HomeStack';
 import RecentStackNavigator from './RecentStackNavigator';
-import ScannerStackNavigator from './ScannerStackNavigator';
 import SettingsStackNavigator from './SettingsStackNavigator';
 import { ROUTES } from './routes';
 import type { MainTabParamList } from '../types/navigation';
@@ -23,7 +22,6 @@ export const TAB_BAR_HEIGHT = 64;
  */
 export function useTabBarBottomPadding() {
   const insets = useSafeAreaInsets();
-  // bar height + bottom padding inside the wrapper + 8px breathing room
   return TAB_BAR_HEIGHT + (insets.bottom > 0 ? insets.bottom : 12) + 8;
 }
 
@@ -67,23 +65,6 @@ function RecentIcon({ color }: { color: string }) {
   );
 }
 
-function ScannerIcon({ color }: { color: string }) {
-  return (
-    <Svg width={SIZE} height={SIZE} viewBox="0 0 24 24" fill="none">
-      {/* Top-left corner */}
-      <Path d="M3 9V5a2 2 0 0 1 2-2h4" stroke={color} strokeWidth={STROKE} strokeLinecap="round" />
-      {/* Top-right corner */}
-      <Path d="M21 9V5a2 2 0 0 0-2-2h-4" stroke={color} strokeWidth={STROKE} strokeLinecap="round" />
-      {/* Bottom-left corner */}
-      <Path d="M3 15v4a2 2 0 0 0 2 2h4" stroke={color} strokeWidth={STROKE} strokeLinecap="round" />
-      {/* Bottom-right corner */}
-      <Path d="M21 15v4a2 2 0 0 1-2 2h-4" stroke={color} strokeWidth={STROKE} strokeLinecap="round" />
-      {/* Scan line */}
-      <Line x1="7" y1="12" x2="17" y2="12" stroke={color} strokeWidth={STROKE + 0.4} strokeLinecap="round" />
-    </Svg>
-  );
-}
-
 function SettingsIcon({ color }: { color: string }) {
   return (
     <Svg width={SIZE} height={SIZE} viewBox="0 0 24 24" fill="none">
@@ -102,7 +83,6 @@ function SettingsIcon({ color }: { color: string }) {
 const TAB_ITEMS = [
   { route: ROUTES.TAB_HOME,     label: 'Home',     Icon: HomeIcon },
   { route: ROUTES.TAB_RECENT,   label: 'Recent',   Icon: RecentIcon },
-  { route: ROUTES.TAB_SCANNER,  label: 'Scanner',  Icon: ScannerIcon },
   { route: ROUTES.TAB_SETTINGS, label: 'Settings', Icon: SettingsIcon },
 ] as const;
 
@@ -177,7 +157,6 @@ export default function MainTabsNavigator() {
     >
       <Tab.Screen name={ROUTES.TAB_HOME}     component={HomeStackNavigator} />
       <Tab.Screen name={ROUTES.TAB_RECENT}   component={RecentStackNavigator} />
-      <Tab.Screen name={ROUTES.TAB_SCANNER}  component={ScannerStackNavigator} />
       <Tab.Screen name={ROUTES.TAB_SETTINGS} component={SettingsStackNavigator} />
     </Tab.Navigator>
   );
@@ -200,14 +179,11 @@ const styles = StyleSheet.create({
     height: BAR_H,
     borderRadius: 28,
     backgroundColor: '#FFFFFF',
-    // Shadow — iOS
     shadowColor: '#1E293B',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.12,
     shadowRadius: 24,
-    // Shadow — Android
     elevation: 16,
-    // Subtle border
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: 'rgba(226,232,240,0.8)',
     overflow: Platform.OS === 'android' ? 'hidden' : 'visible',

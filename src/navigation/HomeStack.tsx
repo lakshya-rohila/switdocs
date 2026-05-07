@@ -14,7 +14,6 @@ import ESignatureScreen from '../screens/signature/ESignatureScreen';
 import HomeScreen from '../screens/home/HomeScreen';
 import SearchScreen from '../screens/home/SearchScreen';
 import QRGeneratorScreen from '../screens/qr/QRGeneratorScreen';
-import QRScannerScreen from '../screens/qr/QRScannerScreen';
 import WordCounterScreen from '../screens/utility/WordCounterScreen';
 import { ROUTES } from './routes';
 import type { HomeStackParamList } from '../types/navigation';
@@ -40,7 +39,6 @@ export default function HomeStackNavigator() {
       <Stack.Screen name={ROUTES.IMAGE_RESIZE} component={ResizeImageScreen} />
       <Stack.Screen name={ROUTES.IMAGE_CROP} component={CropImageScreen} />
       <Stack.Screen name={ROUTES.QR_GENERATOR} component={QRGeneratorScreen} />
-      <Stack.Screen name={ROUTES.QR_SCANNER} component={QRScannerScreen} />
       <Stack.Screen name={ROUTES.WORD_COUNTER} component={WordCounterScreen} />
     </Stack.Navigator>
   );

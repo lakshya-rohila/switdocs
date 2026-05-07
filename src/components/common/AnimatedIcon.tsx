@@ -44,7 +44,6 @@ function getIconSource(name: string): AnimationObject {
     'image-resize': require('../../../assets/animations/icons/image-resize.json'),
     'image-crop': require('../../../assets/animations/icons/image-crop.json'),
     'qr-generate': require('../../../assets/animations/icons/qr-generate.json'),
-    'qr-scan': require('../../../assets/animations/icons/qr-scan.json'),
     'word-counter': require('../../../assets/animations/icons/word-counter.json'),
   };
 

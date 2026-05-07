@@ -147,15 +147,6 @@ export const HOME_TOOL_SECTIONS: HomeToolSection[] = [
         iconImage: 'tool-qr-generator',
       },
       {
-        id: 'qr-scan',
-        title: 'QR / Barcode Scanner',
-        route: ROUTES.QR_SCANNER as HomeToolCard['route'],
-        iconBg: '#A16207',
-        abbreviation: '▣',
-        iconName: 'qr-scan',
-        iconImage: 'tool-qr-scanner',
-      },
-      {
         id: 'wc',
         title: 'Word Counter',
         route: ROUTES.WORD_COUNTER as HomeToolCard['route'],
