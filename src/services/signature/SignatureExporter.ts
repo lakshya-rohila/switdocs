@@ -1,6 +1,7 @@
 import RNFS from 'react-native-fs';
 import ReactNativeBlobUtil from 'react-native-blob-util';
 import { Alert, PermissionsAndroid, Platform } from 'react-native';
+import { Image as CompressorImage } from 'react-native-compressor';
 import Share from 'react-native-share';
 import { showToast } from '../../utils/toast';
 
@@ -17,6 +18,35 @@ function stripDataUri(dataUri: string): string {
 function mimeFromDataUri(dataUri: string): string {
   const match = /^data:([^;,]+)[;,]/.exec(dataUri);
   return match?.[1] ?? 'image/png';
+}
+
+/**
+ * The signature canvas exports PNG with transparent background.
+ * This writes the base64 to a temp file, then re-compresses it as JPG
+ * which forces a white background (JPG doesn't support transparency).
+ */
+async function addWhiteBackground(base64Data: string): Promise<{ base64: string; mime: string; ext: string }> {
+  const tempPng = `${RNFS.CachesDirectoryPath}/sig-temp-${Date.now()}.png`;
+  await RNFS.writeFile(tempPng, base64Data, 'base64');
+
+  try {
+    const outputUri = await CompressorImage.compress(`file://${tempPng}`, {
+      compressionMethod: 'manual',
+      quality: 0.95,
+      output: 'jpg',
+      returnableOutputType: 'uri',
+    });
+
+    const outputPath = outputUri.startsWith('file://') ? outputUri.slice(7) : outputUri;
+    const jpgBase64 = await RNFS.readFile(outputPath, 'base64');
+
+    RNFS.unlink(tempPng).catch(() => {});
+    RNFS.unlink(outputPath).catch(() => {});
+
+    return { base64: jpgBase64, mime: 'image/jpeg', ext: 'jpg' };
+  } catch {
+    return { base64: base64Data, mime: 'image/png', ext: 'png' };
+  }
 }
 
 /** Request WRITE_EXTERNAL_STORAGE on Android < 10 */
@@ -121,17 +151,18 @@ export async function exportSignatureAsset(
       return undefined;
     }
 
-    const mime = mimeFromDataUri(dataUrl);
-    const extension = mime.includes('svg') ? 'svg' : 'png';
-    const fileName = `signature-${Date.now()}.${extension}`;
-    const base64Data = stripDataUri(dataUrl);
+    const rawBase64 = stripDataUri(dataUrl);
+
+    // Convert to JPG with white background (removes transparency)
+    const { base64, mime, ext } = await addWhiteBackground(rawBase64);
+    const fileName = `signature-${Date.now()}.${ext}`;
 
     let saved: boolean;
 
     if (Platform.OS === 'android') {
-      saved = await saveToGalleryAndroid(base64Data, fileName, mime);
+      saved = await saveToGalleryAndroid(base64, fileName, mime);
     } else {
-      saved = await saveToGalleryIOS(base64Data, fileName, mime);
+      saved = await saveToGalleryIOS(base64, fileName, mime);
     }
 
     if (saved) {

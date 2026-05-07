@@ -3,7 +3,7 @@
     <!-- AppTheme: applied after React Native finishes loading -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:editTextBackground">@drawable/rn_edit_text_material</item>
-        <item name="android:windowBackground">@android:color/white</item>
+        <item name="android:windowBackground">@drawable/splash_background</item>
     </style>
 
     <!-- SplashTheme: applied to MainActivity immediately on launch.

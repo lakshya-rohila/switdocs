@@ -18,20 +18,22 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 export default function RootNavigatorWithTheme() {
   const { colors } = useAppTheme();
 
+  const [splashDone, setSplashDone] = React.useState(false);
+
   const navigationTheme = useMemo<NavThemeType>(() => {
     return {
       ...DefaultTheme,
       colors: {
         ...DefaultTheme.colors,
         primary: colors.primary,
-        background: colors.background,
+        background: splashDone ? colors.background : '#2563EB',
         card: colors.surface,
         text: colors.textPrimary,
         border: colors.border,
         notification: colors.accent,
       },
     };
-  }, [colors]);
+  }, [colors, splashDone]);
 
   return (
     <NavigationContainer theme={navigationTheme}>
@@ -49,6 +51,7 @@ export default function RootNavigatorWithTheme() {
           name={ROUTES.ROOT_MAIN}
           component={MainTabsNavigator}
           options={{ animation: 'fade' }}
+          listeners={{ focus: () => setSplashDone(true) }}
         />
       </Stack.Navigator>
     </NavigationContainer>
